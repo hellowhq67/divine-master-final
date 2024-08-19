@@ -15,17 +15,15 @@ const firebaseConfig = {
 
 // Initialize Firebase only on the client side
 let app;
-let analytics;
 let storage;
 let db;
 let auth;
 
 if (typeof window !== "undefined") {
   app = initializeApp(firebaseConfig);
-  analytics = (typeof window !== "undefined") ? require("firebase/analytics").getAnalytics(app) : null;
   storage = getStorage(app);
   db = getFirestore(app);
   auth = getAuth(app);
 }
 
-export { app, analytics, storage, db, auth };
+export { app, storage, db, auth };
