@@ -1,0 +1,7 @@
+@media (max-width:750px) {
+    .orderCard{
+        display: flex;
+        flex-direction: column;
+        gap: 10;
+    }
+}
