@@ -1,24 +1,27 @@
-'use client';
 import { createSlice } from "@reduxjs/toolkit";
 
 // Helper function to save the cart to local storage
 const saveToLocalStorage = (cart) => {
-  localStorage.setItem('cart', JSON.stringify(cart));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
 }
 
 // Helper function to load the cart from local storage
 const loadFromLocalStorage = () => {
-  const savedCart = localStorage.getItem('cart');
-  return savedCart ? JSON.parse(savedCart) : [];
+  if (typeof window !== 'undefined') {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  }
+  return []; // Return an empty array during SSR
 }
 
-// Helper function to calculate the total price
+// Helper functions to calculate total price and quantity
 const calculateTotalPrice = (cart) => {
   return cart.reduce((total, item) => 
     total + (item.smartPrice ? item.smartPrice : item.price) * item.quantity, 0);
 }
 
-// Helper function to calculate the total quantity
 const calculateTotalQuantity = (cart) => {
   return cart.reduce((total, item) => total + item.quantity, 0);
 }
@@ -50,6 +53,7 @@ const cartSlice = createSlice({
         alert('Item removed from cart');
       }
     },
+
     incrementQuantity(state, action) {
       const index = state.findIndex((item) => item._id === action.payload);
       if (index !== -1) {
@@ -57,6 +61,7 @@ const cartSlice = createSlice({
         saveToLocalStorage(state);
       }
     },
+
     decrementQuantity(state, action) {
       const index = state.findIndex((item) => item._id === action.payload);
       if (index !== -1 && state[index].quantity > 1) {

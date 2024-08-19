@@ -198,7 +198,7 @@ const Checkout = () => {
         <div class="px-4 pt-8">
           <p class="text-xl font-medium">Order Summary</p>
           <p class="text-gray-400">
-            Check your items. And select a suitable shipping method.
+           {` Check your items. And select a suitable shipping method.`}
           </p>
           <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
             {cartitems.length === 0 ? (
@@ -259,7 +259,9 @@ const Checkout = () => {
                 <div class="ml-5">
                   <span class="mt-2 font-semibold"> Inside Dhaka </span>
                   <p class="text-slate-500 text-sm leading-6">
-                    Delivery: 2-4 Days,100 Tk
+                   {
+                    ' Delivery: 2-4 Days,100 Tk'
+                   }
                   </p>
                 </div>
               </label>
@@ -285,7 +287,7 @@ const Checkout = () => {
                 <div class="ml-5">
                   <span class="mt-2 font-semibold">OutSide Dhaka</span>
                   <p class="text-slate-500 text-sm leading-6">
-                    Delivery: 2-7 Days 140 tk
+                  {`  Delivery: 2-7 Days 140 tk`}
                   </p>
                 </div>
               </label>
@@ -295,7 +297,7 @@ const Checkout = () => {
         <div class="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
           <p class="text-xl font-medium">Payment Details</p>
           <p class="text-gray-400">
-            Complete your order by providing your payment details.
+     {'       Complete your order by providing your payment details.'}
           </p>
 
           <div class="">
