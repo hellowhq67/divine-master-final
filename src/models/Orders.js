@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema(
     products:Array, 
     paymentStatus:String,
     OrderStatus:String,
+    tran_id: { type: String, unique: true, sparse: true }, 
   },
   { timestamps: true }
 );
