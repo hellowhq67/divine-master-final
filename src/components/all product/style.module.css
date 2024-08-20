@@ -31,9 +31,7 @@
   left: 0;
 }
 
-.aside.open {
-  width: 20vw;
-}
+
 
 .aside ul {
   margin: 20px 0px;
@@ -85,11 +83,16 @@
     width: 0;
     z-index: 999;
   }
-  .aside.open{
-    position: absolute;
-    width:100vw;
-    left: 0;
-  }
+  .aside.open {
+  background: rgb(255, 255, 255);
+  width: 80vw;
+  height: 100%;
+  padding: 20px;
+  overflow: scroll;
+  transition: width 0.3s ease;
+  position: fixed;
+  left: 0;
+}
   .wrapper2{
     display: flex;
     flex-direction: column;
