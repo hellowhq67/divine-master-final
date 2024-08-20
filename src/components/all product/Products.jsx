@@ -23,7 +23,7 @@ export default function Products() {
 
   const [isOpen, setIsOpen] = useState(false);
    const handelSidebar=()=>{
-        alert('99')
+        setIsOpen(!isOpen)
    }
   
   const handlePagination = (event, pageNum) => {
