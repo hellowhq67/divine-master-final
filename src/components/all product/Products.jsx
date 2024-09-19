@@ -117,6 +117,14 @@ export default function Products() {
   const dispatch = useDispatch();
   const itemsPerPage = 10;
 
+<<<<<<< HEAD
+=======
+  const [isOpen, setIsOpen] = useState(false);
+   const handelSidebar=()=>{
+        setIsOpen(!isOpen)
+   }
+  
+>>>>>>> b304a58aaa59773896d29951ef1a71f214dc5cb8
   const handlePagination = (event, pageNum) => {
     setPage(pageNum);
   };

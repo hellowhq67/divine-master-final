@@ -1,9 +1,8 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
-import {getFirestore} from 'firebase/firestore'
+import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB8g0k74jXzA1njDAiL7Y8sidtZx7_e96c",
   authDomain: "divine-org-60a38.firebaseapp.com",
@@ -14,11 +13,17 @@ const firebaseConfig = {
   measurementId: "G-QF207N7QYZ"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Firebase only on the client side
+let app;
+let storage;
+let db;
+let auth;
 
+if (typeof window !== "undefined") {
+  app = initializeApp(firebaseConfig);
+  storage = getStorage(app);
+  db = getFirestore(app);
+  auth = getAuth(app);
+}
 
-export const storage = getStorage(app)
-export const db = getFirestore(app)
-export const auth= getAuth(app)
+export { app, storage, db, auth };
