@@ -5,7 +5,7 @@ const userSchema = new Schema(
     email: String,
     name: String,
     isAdmin:String,
-    cart:Array,
+    profile:String,
     uid:String,
     
   

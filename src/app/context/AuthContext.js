@@ -1,18 +1,37 @@
-'use client'
+"use client";
 import { useContext, createContext, useState, useEffect } from "react";
-import { signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider, FacebookAuthProvider, OAuthProvider, createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  OAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../firebase";
-import { collection, doc, setDoc, getDocs, Timestamp } from "firebase/firestore";
-
+import { useRouter } from "next/navigation";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  Timestamp,
+} from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userDatas, setUserData] = useState(null);
-
+ const router = useRouter()
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
+    if(user){
+    router.push('/')
+    }
   };
 
   const facebookSignIn = () => {
@@ -21,7 +40,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const appleSignIn = () => {
-    const provider = new OAuthProvider('apple.com');
+    const provider = new OAuthProvider("apple.com");
     signInWithPopup(auth, provider);
   };
 
@@ -29,62 +48,56 @@ export const AuthContextProvider = ({ children }) => {
     signOut(auth);
   };
 
-  const updateProfile = async (displayName, bio, phoneNumber, location, profileImage) => {
+  const createAccountWithEmail = async (email, password, name) => {
     try {
-      if (auth.currentUser) {
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        const userData = {
-          displayName: displayName,
-          email: auth.currentUser.email,
-          bio: bio,
-          phoneNumber: phoneNumber,
-          location: location,
-          profileImage: profileImage,
-        };
-        await setDoc(userRef, userData, { merge: true });
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error.message);
-    }
-  };
-
-  const AddressDetails = async (name, streetAddress, country, apt, state, zipcode) => {
-    try {
-      if (auth.currentUser) {
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        const userData = {
-          addressName: name,
-          streetAddress: streetAddress,
-          country: country,
-          apt: apt,
-          state: state,
-          zipcode: zipcode,
-        };
-        await setDoc(userRef, userData, { merge: true });
-        console.log("Address updated successfully");
-      } else {
-        console.error("No user logged in");
-      }
-    } catch (error) {
-      console.error("Error updating address:", error.message);
-    }
-  };
-
-  const createAccountWithEmail = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const { user } = userCredential;
+
+      // Update the user's profile with the display name
+      await updateProfile(user, { displayName: name });
+
+      // Set the user in state
       setUser(user);
+
+      // Save to Firestore
+      const userRef = doc(db, "users", user.uid);
+      const userData = {
+        displayName: name, // Use the provided name
+        email: user.email,
+        userid: user.uid,
+        joinDate: Timestamp.now(),
+      };
+      await setDoc(userRef, userData, { merge: true });
+
+      return true;
     } catch (error) {
       console.error("Error creating account:", error.message);
+      return false;
     }
   };
-
+  const loginWithEmailPassword = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const { user } = userCredential;
+      setUser(user);
+      console.log("User signed in:", user);
+    } catch (error) {
+      console.error("Error signing in with email and password:", error.message);
+    }
+  };
   const getAllUsersData = async () => {
     try {
       const usersCollectionRef = collection(db, "users");
       const snapshot = await getDocs(usersCollectionRef);
-      const usersData = snapshot.docs.map(doc => doc.data());
+      const usersData = snapshot.docs.map((doc) => doc.data());
       console.log(usersData);
       return usersData;
     } catch (error) {
@@ -113,27 +126,27 @@ export const AuthContextProvider = ({ children }) => {
           email: currentUser.email,
           name: currentUser.displayName,
           isAdmin: "", // Replace with your logic for isAdmin
-          cart: [], // Replace with your logic for cart
+          profile: "", // Replace with your logic for cart
           uid: currentUser.uid,
         };
 
         try {
           const response = await fetch(apiEndpoint, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(postData),
           });
 
           if (!response.ok) {
-            throw new Error('Failed to send data to server');
+            throw new Error("Failed to send data to server");
           }
 
           const responseData = await response.json();
-          console.log('API Response:', responseData);
+          console.log("API Response:", responseData);
         } catch (error) {
-          console.error('Error sending data to server:', error.message);
+          console.error("Error sending data to server:", error.message);
         }
 
         getAllUsersData(); // Fetch all users data after updating
@@ -144,7 +157,18 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, facebookSignIn, appleSignIn, logOut, updateProfile, AddressDetails, getAllUsersData, createAccountWithEmail }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        googleSignIn,
+        facebookSignIn,
+        appleSignIn,
+        createAccountWithEmail,
+        logOut,
+        getAllUsersData,
+        loginWithEmailPassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

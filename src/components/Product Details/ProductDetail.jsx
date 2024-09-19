@@ -1,12 +1,11 @@
-"use client"
-import React,{useState} from "react";
+"use client";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-
-
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import { ToastContainer } from "react-toastify";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -15,15 +14,37 @@ import "swiper/css/thumbs";
 
 import "./style.css";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
-
+import { add } from "@/redux/Cartslice";
+import { addToFavorites, removeFromFavorites } from "@/redux/favoritesSlice";
+import { useDispatch, useSelector } from "react-redux";
 export default function ProductDetail({ product }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const dispatch = useDispatch();
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size);
+  };
 
+  const handleAddToCart = () => {
+    dispatch(add({ ...product, size: selectedSize }));
+  };
+  const favorites = useSelector((state) => state.favorites); // Access the favorites state
+
+  const isFavorite = favorites.some((item) => item._id === product._id);
+
+  const handleToggleFavorite = () => {
+    if (isFavorite) {
+      dispatch(removeFromFavorites(product._id));
+    } else {
+      dispatch(addToFavorites(product));
+    }
+  };
   return (
     <>
+      <ToastContainer />
       <section class="relative ">
-        <div class="w-full mx-auto px-4 sm:px-6 lg:px-0">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mx-auto max-md:px-2 ">
+        <div class="w-full mx-auto px-4 sm:px-6 lg:px-4 ">
+          <div class=" my-10 grid grid-cols-1 lg:grid-cols-2 gap-16 mx-auto max-md:px-2 ">
             <div class="img">
               <Swiper
                 style={{
@@ -37,21 +58,20 @@ export default function ProductDetail({ product }) {
                 className="mySwiper2"
               >
                 <SwiperSlide>
-                  <img src={product.productImage1}/>
+                  <img src={product.productImage1} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage2}/>
+                  <img src={product.productImage2} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage3}/>
+                  <img src={product.productImage3} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage4}/>
+                  <img src={product.productImage4} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage5}/>
+                  <img src={product.productImage5} />
                 </SwiperSlide>
-                
               </Swiper>
               <Swiper
                 onSwiper={setThumbsSwiper}
@@ -63,22 +83,20 @@ export default function ProductDetail({ product }) {
                 className="mySwiper"
               >
                 <SwiperSlide>
-                  <img src={product.productImage1}/>
+                  <img src={product.productImage1} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage2}/>
+                  <img src={product.productImage2} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage3}/>
+                  <img src={product.productImage3} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage4}/>
+                  <img src={product.productImage4} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={product.productImage5}/>
+                  <img src={product.productImage5} />
                 </SwiperSlide>
-      
-        
               </Swiper>
             </div>
             <div class="data w-full lg:pr-8 pr-0 xl:justify-start justify-center flex items-center max-lg:pb-10 xl:my-2 lg:my-5 my-0">
@@ -202,7 +220,7 @@ export default function ProductDetail({ product }) {
                     </span>
                   </div>
                 </div>
-               
+
                 <ul class="grid gap-y-4 mb-8">
                   <li class="flex items-center gap-3">
                     <svg
@@ -282,7 +300,7 @@ export default function ProductDetail({ product }) {
                       />
                     </svg>
                     <span class="font-normal text-base text-gray-900 ">
-                     Cash On delivery is available
+                      Cash On delivery is available
                     </span>
                   </li>
                   <li class="flex items-center gap-3">
@@ -311,15 +329,19 @@ export default function ProductDetail({ product }) {
                 </p>
                 <div class="w-full pb-8 border-b border-gray-100 flex-wrap">
                   <div class="grid grid-cols-3 min-[400px]:grid-cols-5 gap-3 max-w-md">
-                    {product.sizes[0].map((x) => {
-                      return (
-                        <>
-                          <button className="border-2 border-gray-400 p-2">
-                            {x}
-                          </button>
-                        </>
-                      );
-                    })}
+                    {product.sizes[0].map((size) => (
+                      <button
+                        key={size}
+                        className={`border-2 p-2 ${
+                          selectedSize === size
+                            ? "border-blue-500"
+                            : "border-gray-400"
+                        } ${selectedSize === size ? "bg-blue-100" : ""}`}
+                        onClick={() => handleSizeSelect(size)}
+                      >
+                        {size}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -393,7 +415,11 @@ export default function ProductDetail({ product }) {
                       </svg>
                     </button>
                   </div>
-                  <button class="group py-4 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 transition-all duration-500 hover:bg-indigo-100">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!selectedSize}
+                    class="group py-4 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 transition-all duration-500 hover:bg-indigo-100"
+                  >
                     <svg
                       class="stroke-indigo-600 "
                       width="22"
@@ -413,13 +439,20 @@ export default function ProductDetail({ product }) {
                   </button>
                 </div>
                 <div class="flex items-center gap-3">
-                  <button class="group transition-all duration-500 p-4 rounded-full bg-indigo-50 hover:bg-indigo-100 hover:shadow-sm hover:shadow-indigo-300">
+                  <button
+                    onClick={handleToggleFavorite}
+                    className={`group transition-all duration-500 p-4 rounded-full ${
+                      isFavorite
+                        ? "bg-indigo-100 shadow-sm shadow-indigo-300"
+                        : "bg-indigo-50 hover:bg-indigo-100 hover:shadow-sm hover:shadow-indigo-300"
+                    }`}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="26"
                       height="26"
                       viewBox="0 0 26 26"
-                      fill="none"
+                      fill={isFavorite ? "#4F46E5" : "none"}
                     >
                       <path
                         d="M4.47084 14.3196L13.0281 22.7501L21.9599 13.9506M13.0034 5.07888C15.4786 2.64037 19.5008 2.64037 21.976 5.07888C24.4511 7.5254 24.4511 11.4799 21.9841 13.9265M12.9956 5.07888C10.5204 2.64037 6.49824 2.64037 4.02307 5.07888C1.54789 7.51738 1.54789 11.4799 4.02307 13.9184M4.02307 13.9184L4.04407 13.939M4.02307 13.9184L4.46274 14.3115"
@@ -436,40 +469,63 @@ export default function ProductDetail({ product }) {
                   </button>
                 </div>
                 <Accordion defaultExpanded>
-        <AccordionSummary
-           expandIcon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-          </svg>
-          }
-          aria-controls="panel1-content"
-          id="panel1-header"
-        >
-          <Typography>Description</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            {product.description}
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-          </svg>
-          }
-          aria-controls="panel2-content"
-          id="panel2-header"
-        >
-          <Typography>Trams And Condition</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+                  <AccordionSummary
+                    expandIcon={
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                        />
+                      </svg>
+                    }
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                  >
+                    <Typography>Description</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>{product.description}</Typography>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                        />
+                      </svg>
+                    }
+                    aria-controls="panel2-content"
+                    id="panel2-header"
+                  >
+                    <Typography>Trams And Condition</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Suspendisse malesuada lacus ex, sit amet blandit leo
+                      lobortis eget.
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
               </div>
             </div>
           </div>

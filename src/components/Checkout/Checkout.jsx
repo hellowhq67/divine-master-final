@@ -16,7 +16,9 @@ import { UseAuth } from "@/app/context/AuthContext";
 import Loder from "@/components/loder/Loder";
 import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 const Checkout = () => {
+  const router =useRouter()
   const [loading, setLoading] = useState(true);
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
@@ -39,7 +41,6 @@ const Checkout = () => {
     dispatch(remove(id));
   };
 
-  const [address, setAddress] = useState("");
   const [method, setMethod] = useState([]);
 
   const handleClose = () => setShow(false);
@@ -103,6 +104,12 @@ const Checkout = () => {
   };
   const COD = async () => {
     setLoader(true);
+  
+    // Show a pending toast notification
+    const pendingToastId = toast.info("Processing your order...", {
+      autoClose: false, // Keep the toast open until manually dismissed
+    });
+  
     if (
       !user ||
       !email ||
@@ -115,75 +122,98 @@ const Checkout = () => {
       !cartitems.length
     ) {
       toast.error("Please fill in all required fields.");
-      return; // Prevent API call if validation fails
+      setLoader(false); // Stop loader on validation error
+      toast.dismiss(pendingToastId); // Dismiss pending toast on validation error
+      return;
     }
-    const token = await user.getIdToken();
-
-    const paymentData = {
-      uid: user ? user.uid : "",
-      total_amount: total, // The total amount to be paid
-      currency: "BTD", // Currency for the transaction
-      cus_name: user ? user.displayName : "", // Customer's name
-      cus_email: email, // Customer's email
-      cus_add1: address1, // Customer's address line 1
-      cus_add2: address2, // Customer's address line 2
-      cus_city: city, // Customer's city
-      cus_state: state, // Customer's state
-      cus_postcode: postalCode, // Customer's postcode
-      cus_country: "Bd", // Customer's country
-      cus_phone: phoneNumber, // Customer's phone number
-      cus_fax: phoneNumber, // Customer's fax number (optional)
-      shipping_method: "corier", // Shipping method
-      ship_name: "", // Shipping name
-      ship_add1: address1, // Shipping address line 1
-      ship_add2: address2, // Shipping address line 2
-      ship_city: city, // Shipping city
-      ship_state: state, // Shipping state
-      ship_postcode: postalCode, // Shipping postcode
-      ship_country: "BD",
-
-      products: cartitems, // , // Category of the product
-
-      paymentStatus: "COD",
-      OrderStatus: "pending", // Quantity of the product
-    };
-    console.log(paymentData);
+  
     try {
+      const token = await user.getIdToken();
+  
+      const paymentData = {
+        uid: user ? user.uid : "",
+        total_amount: total,
+        currency: "BTD",
+        cus_name: user ? user.displayName : "",
+        cus_email: email,
+        cus_add1: address1,
+        cus_add2: address2,
+        cus_city: city,
+        cus_state: state,
+        cus_postcode: postalCode,
+        cus_country: "BD",
+        cus_phone: phoneNumber,
+        cus_fax: phoneNumber,
+        shipping_method: "courier",
+        ship_name: user ? user.displayName : "",
+        ship_add1: address1,
+        ship_add2: address2,
+        ship_city: city,
+        ship_state: state,
+        ship_postcode: postalCode,
+        ship_country: "BD",
+        products: cartitems,
+        paymentStatus: "COD",
+        OrderStatus: "pending",
+      };
+  
+      console.log(paymentData);
+  
       let res = await fetch("/api/user/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Add Authorization header
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(paymentData),
       });
-
+  
       let responseJson = await res.json();
       console.log(responseJson);
+  
       if (responseJson) {
-        alert("order Completed");
+        const emailData = {
+          to: email,
+          userEmail: email,
+          invoiceDate: new Date().toLocaleDateString(),
+          orderId: responseJson.orderId, // Assuming this is returned from the order API
+          documentNo:'pending', // Placeholder or use the real document number
+          billedTo: {
+            name: `${user.displayName}`,
+            address1: address1,
+            address2: address2,
+            city: city,
+            state: state,
+            postalCode: postalCode,
+            country: "BD",
+          },
+          products: cartitems,
+          total: total,
+        };
+  
+        let emailRes = await fetch("/api/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(emailData),
+        });
+  
+        let emailResponseJson = await emailRes.json();
+        if (emailResponseJson) {
+          router.push(`/success`);
+        }
+        console.log("Email sent: ", emailResponseJson);
       }
-      if (responseJson) {
-        // Generate PDF Invoice
-    
-
-        // Clear Input Values
-        setEmail("");
-        setAddress1("");
-        setAddress2("");
-        setCity("");
-        setState("");
-        setPostalCode("");
-        SetPhoneNumber("");
-
-        toast.success("Order Completed and Invoice Sent!");
-      }
-
-      setLoader(false);
-      setLoader(false);
     } catch (error) {
-      console.error("Error fetching payment options:", error);
+      console.error("Error processing order:", error);
+      toast.error(
+        "Something went wrong while processing your order. Please try again."
+      );
+    } finally {
       setLoader(false);
+      toast.dismiss(pendingToastId); // Dismiss the pending toast once the process is complete
     }
   };
 
@@ -198,7 +228,7 @@ const Checkout = () => {
         <div class="px-4 pt-8">
           <p class="text-xl font-medium">Order Summary</p>
           <p class="text-gray-400">
-           {` Check your items. And select a suitable shipping method.`}
+            {` Check your items. And select a suitable shipping method.`}
           </p>
           <div className="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
             {cartitems.length === 0 ? (
@@ -259,9 +289,7 @@ const Checkout = () => {
                 <div class="ml-5">
                   <span class="mt-2 font-semibold"> Inside Dhaka </span>
                   <p class="text-slate-500 text-sm leading-6">
-                   {
-                    ' Delivery: 2-4 Days,100 Tk'
-                   }
+                    {" Delivery: 2-4 Days,100 Tk"}
                   </p>
                 </div>
               </label>
@@ -287,7 +315,7 @@ const Checkout = () => {
                 <div class="ml-5">
                   <span class="mt-2 font-semibold">OutSide Dhaka</span>
                   <p class="text-slate-500 text-sm leading-6">
-                  {`  Delivery: 2-7 Days 140 tk`}
+                    {`  Delivery: 2-7 Days 140 tk`}
                   </p>
                 </div>
               </label>
@@ -297,7 +325,7 @@ const Checkout = () => {
         <div class="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
           <p class="text-xl font-medium">Payment Details</p>
           <p class="text-gray-400">
-     {'       Complete your order by providing your payment details.'}
+            {"       Complete your order by providing your payment details."}
           </p>
 
           <div class="">

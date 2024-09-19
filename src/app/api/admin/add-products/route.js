@@ -32,6 +32,9 @@ export async function POST(request) {
       quantity,
       stock,
       sku,
+      rating,
+      costing,
+      sells,
     } = await request.json();
 
     const newProduct = await Product.create({
@@ -61,6 +64,9 @@ export async function POST(request) {
       quantity,
       stock,
       sku,
+      rating,
+      costing,
+      sells,
     });
 
     return NextResponse.json(

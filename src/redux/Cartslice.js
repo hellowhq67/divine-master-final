@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify"; // Import Toastify
 
 // Helper function to save the cart to local storage
 const saveToLocalStorage = (cart) => {
@@ -28,56 +29,76 @@ const calculateTotalQuantity = (cart) => {
 
 const cartSlice = createSlice({
   name: "Cart",
-  initialState: loadFromLocalStorage(),
+  initialState: {
+    items: loadFromLocalStorage(),
+    discount: 0, // Store discount amount
+  },
   reducers: {
     add(state, action) {
-      const index = state.findIndex((item) => item._id === action.payload._id);
+      const index = state.items.findIndex((item) => item._id === action.payload._id);
 
       if (index !== -1) {
         // If the item already exists, increment its quantity
-        state[index].quantity += 1;
+        state.items[index].quantity += 1;
       } else {
         // If the item doesn't exist, add it to the cart with an initial quantity of 1
-        state.push({ ...action.payload, quantity: 1 });
+        state.items.push({ ...action.payload, quantity: 1 });
       }
 
-      saveToLocalStorage(state);
-      alert('Item added to cart');
+      saveToLocalStorage(state.items);
+      toast.success('Item added to cart');
     },
 
     remove(state, action) {
-      const index = state.findIndex((item) => item._id === action.payload);
+      const index = state.items.findIndex((item) => item._id === action.payload);
       if (index !== -1) {
-        state.splice(index, 1);
-        saveToLocalStorage(state);
-        alert('Item removed from cart');
+        state.items.splice(index, 1);
+        saveToLocalStorage(state.items);
+        toast.success('Item removed from cart');
       }
     },
 
     incrementQuantity(state, action) {
-      const index = state.findIndex((item) => item._id === action.payload);
+      const index = state.items.findIndex((item) => item._id === action.payload);
       if (index !== -1) {
-        state[index].quantity += 1;
-        saveToLocalStorage(state);
+        state.items[index].quantity += 1;
+        saveToLocalStorage(state.items);
       }
     },
 
     decrementQuantity(state, action) {
-      const index = state.findIndex((item) => item._id === action.payload);
-      if (index !== -1 && state[index].quantity > 1) {
-        state[index].quantity -= 1;
-        saveToLocalStorage(state);
+      const index = state.items.findIndex((item) => item._id === action.payload);
+      if (index !== -1 && state.items[index].quantity > 1) {
+        state.items[index].quantity -= 1;
+        saveToLocalStorage(state.items);
+      }
+    },
+
+    applyCoupon(state, action) {
+      const { couponCode } = action.payload;
+
+      // Apply a discount based on the coupon code
+      // For example, "SAVE10" gives a 10% discount
+      if (couponCode === "SAVE10") {
+        state.discount = 0.10; // 10% discount
+        toast.success('Coupon applied! You saved 10%');
+      } else {
+        state.discount = 0;
+        toast.error('Invalid coupon code');
       }
     }
   }
 });
 
-export const { add, remove, incrementQuantity, decrementQuantity } = cartSlice.actions;
-
-// Selector to get the total price
-export const selectTotalPrice = (state) => calculateTotalPrice(state.cart);
+// Selector to get the total price after applying the discount
+export const selectTotalPrice = (state) => {
+  const totalPrice = calculateTotalPrice(state.cart.items);
+  return totalPrice * (1 - state.cart.discount);
+};
 
 // Selector to get the total quantity
-export const selectTotalQuantity = (state) => calculateTotalQuantity(state.cart);
+export const selectTotalQuantity = (state) => calculateTotalQuantity(state.cart.items);
+
+export const { add, remove, incrementQuantity, decrementQuantity, applyCoupon } = cartSlice.actions;
 
 export default cartSlice.reducer;

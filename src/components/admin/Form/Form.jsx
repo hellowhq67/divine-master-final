@@ -4,8 +4,8 @@ import Sidebar from "../sidebar/Sidebar";
 import { Switch } from "@headlessui/react";
 import { UploadDropzone } from "@uploadthing/react";
 import { ToastContainer, toast } from "react-toastify";
-import Navigation from '@/components/admin/navigation/Navigation'
-
+import Navigation from "@/components/admin/navigation/Navigation";
+import { useRouter } from "next/navigation";
 const categories = {
   mens: {
     tops: [
@@ -61,6 +61,7 @@ const categories = {
 };
 
 export default function Form() {
+  const router = useRouter()
   const [productName, setProductName] = useState("");
   const [desc, setDesc] = useState("");
   const [sku, setSku] = useState("");
@@ -86,7 +87,7 @@ export default function Form() {
   const [department, setDepartment] = useState("");
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
-
+  const [productCost, setProductCost] = useState(0);
   const handleDepartmentChange = (e) => {
     setDepartment(e.target.value);
     setCategory("");
@@ -112,59 +113,69 @@ export default function Form() {
     });
   };
   const handelSubmit = async () => {
+    const pendingToastId = toast.loading("Uploading product...");
     try {
-      const response = await fetch(
-        "/api/admin/add-products",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            shippings: shipping,
-            glodalshippings: shippingGlobal,
-            productImage1: imageUrl,
-            productImage2: imageUrl2,
-            productImage3: imageUrl3,
-            productImage4: imageUrl4,
-            productImage5: imageUrl5,
-            productName: productName,
-            sizes: [selectedSizes],
-            color: color,
-            price: price,
-            smartPrice: smartprice,
-            priceUsd: priceUSD,
-            date: date,
-            description: desc,
-            department: department,
-            category: category,
-            subcetagory: subCategory,
-            isFeatured: enabled,
-            freeShipping: enabled1,
-            cupon: cupon,
-            usaShipping: shippingUSA,
-            europShipping: shippingERU,
-            quantity:0,
-            stock:quantity,
-            sku: sku,
-          }),
-        }
-      );
+      const response = await fetch("/api/admin/add-products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          shippings: shipping,
+          glodalshippings: shippingGlobal,
+          productImage1: imageUrl,
+          productImage2: imageUrl2,
+          productImage3: imageUrl3,
+          productImage4: imageUrl4,
+          productImage5: imageUrl5,
+          productName: productName,
+          sizes: [selectedSizes],
+          color: color,
+          price: price,
+          smartPrice: smartprice,
+          priceUsd: priceUSD,
+          date: date,
+          description: desc,
+          department: department,
+          category: category,
+          subcetagory: subCategory,
+          isFeatured: enabled,
+          freeShipping: enabled1,
+          cupon: cupon,
+          usaShipping: shippingUSA,
+          europShipping: shippingERU,
+          quantity: 0,
+          stock: quantity,
+          sku: sku,
+          rating: 0,
+          costing: productCost,
+          sells: 0,
+        }),
+      });
       const responseData = await response.json();
-        toast.success("product publish");
-        router.push("/admin/forms");
-   
+      toast.update(pendingToastId, {
+        render: "Product published successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 5000,
+      });
+      router.push("/admin/forms");
     } catch (error) {
-
-    toast.error("An error occurred while creating the product");
+      toast.update(pendingToastId, {
+        render: "An error occurred while creating the product.",
+        type: "error",
+        isLoading: false,
+        autoClose: 5000,
+      });
     }
-
+  
+  
   };
 
   return (
     <div>
       <ToastContainer />
-      <Navigation/>
+      <Navigation />
       <Sidebar />
       <div class="p-4 sm:ml-64">
         <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
@@ -538,6 +549,23 @@ export default function Form() {
                       onChange={(e) => setPriceUSD(e.target.value)}
                     />
                   </div>
+                  <div class="w-full">
+                    <label
+                      for="price"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Product Cost
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      id="price"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                      placeholder="Add product Cost "
+                      required=""
+                      onChange={(e) => setProductCost(e.target.value)}
+                    />
+                  </div>
                   <div class="sm:col-span-2">
                     <label
                       for="description"
@@ -675,7 +703,7 @@ export default function Form() {
                           alt="Uploaded Image"
                         />
                         {/* Button to remove the uploaded image and show UploadDropzone again */}
-                        <button onClick={() => setImageUr4(null)}>
+                        <button onClick={() => setImageUrl4(null)}>
                           Remove Image
                         </button>
                       </div>

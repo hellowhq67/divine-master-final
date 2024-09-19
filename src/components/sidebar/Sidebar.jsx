@@ -10,24 +10,23 @@ const Sidebar = () => {
 
   return (
     <>
-    
-      <div className="my-3 flex flex-col items-start sm:bg-none   lg:w-40 shadow-lg h-screen">
-      <button className="md:hidden bg-none  " onClick={handleMenuToggle}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3.75 6h16.5M3.75 12h16.5m-16.5 6h16.5"
-          />
-        </svg>
-      </button>
+      <div className="my-20 flex flex-col items-start sm:bg-none   lg:w-40 shadow-lg h-screen">
+        <button className="md:hidden bg-none  " onClick={handleMenuToggle}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6h16.5M3.75 12h16.5m-16.5 6h16.5"
+            />
+          </svg>
+        </button>
         <div
           className={`flex-col items-start w-full ${
             isMenuOpen ? "flex" : "hidden"
@@ -35,7 +34,7 @@ const Sidebar = () => {
         >
           <Link
             className="flex items-center w-full px-6 py-2 my-4 hover:bg-slate-100 font-bold"
-            href=""
+            href="/profile"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -55,43 +54,37 @@ const Sidebar = () => {
           </Link>
           <Link
             className="flex items-center w-full px-6 py-2 my-4 text-sm hover:bg-slate-100 font-bold"
-            href="profile/order"
+            href="/favorite"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
+              stroke-width="1.5"
               stroke="currentColor"
-              className="size-6"
+              class="size-6"
             >
               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9"
               />
             </svg>
-            ORDERS
+            Favorite
           </Link>
           <Link
             className="flex items-center w-full px-6 py-2 my-4 text-sm hover:bg-slate-100 font-bold"
-            href=""
+            href="/cart"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
+              fill="currentColor"
+              class="size-6"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-              />
+              <path d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 4.509l-.232-.867A1.875 1.875 0 0 0 3.636 2.25H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z" />
             </svg>
-            EVENTS
+            CART
           </Link>
           <Link
             className="flex items-center w-full px-6 py-2 my-4 text-sm hover:bg-slate-100 font-bold"

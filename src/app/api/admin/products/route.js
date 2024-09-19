@@ -19,8 +19,26 @@ export async function GET(request) {
     // Fetch products from the database with pagination
     const products = await Product.find({}).skip(skip).limit(parseInt(limit));
 
-    // Return the fetched products as a JSON response
-    return NextResponse.json({ success: true, products });
+    // Fetch recent views (Mocked with random products for now)
+    const recentViews = await Product.find({}).limit(5); // Mock recent views
+
+    // Fetch related products based on category or tags (e.g., using category)
+    const relatedCategory = requestUrl.searchParams.get('category');
+    let relatedProducts = [];
+
+    if (relatedCategory) {
+      relatedProducts = await Product.find({ category: relatedCategory })
+        .limit(5)
+        .exec();
+    }
+
+    // Return the fetched products along with recent views and related products as a JSON response
+    return NextResponse.json({
+      success: true,
+      products,
+      recentViews,
+      relatedProducts,
+    });
   } catch (error) {
     // Log the error and return an error response
     console.error(error);

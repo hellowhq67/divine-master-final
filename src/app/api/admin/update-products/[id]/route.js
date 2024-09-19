@@ -34,6 +34,9 @@ export async function PUT(req, { params }) {
       europShipping,
       quantity,
       sku,
+      rating,
+      costing,
+      sells,
     } = await req.json();
 
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -64,6 +67,9 @@ export async function PUT(req, { params }) {
         europShipping,
         quantity,
         sku,
+        rating,
+        costing,
+        sells,
       },
       { new: true }
     );

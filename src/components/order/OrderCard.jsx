@@ -8,7 +8,7 @@ export default function OrderCard({ order }) {
         <>
           <div className="flex items-center justify-center flex-col">
             <h1 className="text-3xl ">{`YOU DON'T HAVE ANY PURCHASES YET. ORDER TODAY!`}</h1>
-            <Link className="underline" href="/product">
+            <Link className="underline" href="/products">
               Continue Shopping
             </Link>
           </div>

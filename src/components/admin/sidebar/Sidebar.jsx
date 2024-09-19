@@ -85,19 +85,19 @@ function Sidebar() {
                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
                 <MenuItem>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
-                    Earnings
-                  </a>
+                  <Link  href="/admin/products/table" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
+                   Products
+                  </Link>
                 </MenuItem>
                 <MenuItem>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
-                    Settings
-                  </a>
+                  <Link  href="/admin/orders" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
+                    Orders
+                  </Link>
                 </MenuItem>
                 <MenuItem>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
+                  <Link  href="#" className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
                     Sign out
-                  </a>
+                  </Link>
                 </MenuItem>
               </MenuItems>
             </Menu>
@@ -183,7 +183,7 @@ function Sidebar() {
                 </li>
                 <li>
                   <Link
-                    href="/admin/products/billings"
+                    href="/admin/billing"
                     className="flex items-center w-full p-2 text-sm text-gray-900 transition duration-75 rounded-lg ps-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                   >
                     Billing
@@ -265,7 +265,7 @@ function Sidebar() {
 
             <li>
               <Link
-                href="#"
+                href="/admin/user"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <svg

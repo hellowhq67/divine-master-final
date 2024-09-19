@@ -22,8 +22,8 @@ import Cart from "../cart/Cart";
 import Navprofile from "./Navprofile";
 import { getAuth } from "firebase/auth";
 import { UseAuth } from "@/app/context/AuthContext";
-import { useSelector } from 'react-redux';
-
+import { useSelector } from "react-redux";
+import axios from "axios";
 const navigation = {
   categories: [
     {
@@ -50,15 +50,13 @@ const navigation = {
       sections: [
         {
           id: "clothing",
-          name: "Clothing",
+          name: "Cetagory",
           items: [
-            { name: "Tops", href: "#" },
-            { name: "Pants", href: "#" },
-            { name: "Sweaters", href: "#" },
-            { name: "T-Shirts", href: "#" },
-            { name: "Jackets", href: "#" },
-            { name: "Activewear", href: "#" },
-            { name: "Browse All", href: "#" },
+            { name: "Tops", href: "/category/tops" },
+            { name: "Bottoms", href: "/category/bottoms" },
+            { name: "Activewear", href: "/category/activewear" },
+            { name: "Footwear", href: "/category/footwear" },
+            { name: "Accessories", href: "/category/accessories" },
           ],
         },
         {
@@ -102,24 +100,41 @@ export default function Nav() {
   const [cartOpen, setCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const userID = user ? user.uid : null;
-  const item = useSelector((state)=>state.cart)
+  const item = useSelector((state) => state.cart.items);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [productsResponse] = await Promise.all([
+          axios.get("/api/admin/products/all"),
+        ]);
 
+        setProducts(productsResponse.data.products);
+
+        setFilteredProducts(productsResponse.data.products);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
   const openCart = () => setCartOpen(true);
   const closeCart = () => setCartOpen(false);
   const handelLogout = async () => {
     try {
       // Delete user from MongoDB
       if (userID) {
-        const response = await fetch(
-          `/api/user/all-users/${userID}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ uid: userID }),
-          }
-        );
+        const response = await fetch(`/api/user/all-users/${userID}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ uid: userID }),
+        });
         if (response.ok) {
           alert("user deleted");
         }
@@ -147,7 +162,6 @@ export default function Nav() {
   }, [user]);
   return (
     <>
-
       <div className=" bg-white">
         {/* Mobile menu */}
         <Transition.Root show={open} as={Fragment}>
@@ -286,25 +300,39 @@ export default function Nav() {
                       </div>
                     ))}
                   </div>
-
-                  <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                    <div className="flow-root">
-                      <a
-                        href="#"
-                        className="-m-2 block p-2 font-medium text-gray-900"
-                      >
-                        Sign in
-                      </a>
+                  {!user ? (
+                    <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                      <div className="flow-root">
+                        <Link
+                          href="/login"
+                          className="-m-2 block p-2 font-medium text-gray-900"
+                        >
+                          Sign in
+                        </Link>
+                      </div>
+                      <div className="flow-root">
+                        <Link
+                          href="/registration"
+                          className="-m-2 block p-2 font-medium text-gray-900"
+                        >
+                          Create account
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flow-root">
+                  ) : (
+                    <>
                       <Link
-                        href="/registration"
-                        className="-m-2 block p-2 font-medium text-gray-900"
+                        href="/profile"
+                        className={classNames(
+                          focus ? "bg-gray-100" : "",
+                          "block px-4 py-2 text-sm text-gray-700"
+                        )}
                       >
-                        Create account
+                        {user ? user.displayName : null}
                       </Link>
-                    </div>
-                  </div>
+                    </>
+                  )}
+
                   <div className="border-t border-gray-200 px-4 py-6">
                     <a href="#" className="-m-2 flex items-center p-2">
                       <img
@@ -471,10 +499,13 @@ export default function Nav() {
                     ))}
                   </div>
                 </Popover.Group>
+                    {/* Search */}
+                   
+
                 <div className="ml-auto flex items-center">
                   {!user ? (
                     <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                      <Link href={""}>Sign in</Link>
+                      <Link href={"/login"}>Sign in</Link>
                       <span
                         className="h-6 w-px bg-gray-200"
                         aria-hidden="true"
@@ -510,15 +541,15 @@ export default function Nav() {
                           </MenuItem>
                           <MenuItem>
                             {({ focus }) => (
-                              <a
-                                href="#"
+                              <Link
+                                href="/profile"
                                 className={classNames(
                                   focus ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
                                 )}
                               >
                                 Orders
-                              </a>
+                              </Link>
                             )}
                           </MenuItem>
                           <MenuItem>
@@ -541,37 +572,7 @@ export default function Nav() {
                     </>
                   )}
 
-                  <div className="hidden lg:ml-8 lg:flex">
-                    <a
-                      href="#"
-                      className="flex items-center text-gray-700 hover:text-gray-800"
-                    >
-                      <img
-                        src="https://tailwindui.com/img/flags/flag-canada.svg"
-                        alt=""
-                        className="block h-auto w-5 flex-shrink-0"
-                      />
-                      <span className="ml-3 block text-sm font-medium">
-                        CAD
-                      </span>
-                      <span className="sr-only">, change currency</span>
-                    </a>
-                  </div>
-
-                  {/* Search */}
-                  <div className="flex lg:ml-6">
-                    <a
-                      href=""
-                      className="p-2 text-gray-400 hover:text-gray-500"
-                    >
-                      <span className="sr-only">Search</span>
-                      <MagnifyingGlassIcon
-                        className="h-6 w-6"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </div>
-
+              
                   {/* Cart */}
                   <div className="ml-4 flow-root lg:ml-6">
                     <a href="#" className="group -m-2 flex items-center p-2">
@@ -581,7 +582,7 @@ export default function Nav() {
                         aria-hidden="true"
                       />
                       <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      {item.length}
+                        {item.length}
                       </span>
                       <span className="sr-only">items in cart, view bag</span>
                     </a>

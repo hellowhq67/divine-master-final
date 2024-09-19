@@ -41,8 +41,8 @@ export default function Featured() {
       </h2>
       <div className=" w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
         {products.map((product, index) => (
-        <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-        <a href="#">
+        <Link href={`/product/${product._id}`} class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+        <Link href={`/product/${product._id}`}>
             <img  class="h-80 w-72 object-cover rounded-t-xl" src={product.productImage1} alt="image"/>
     
             <div class="px-4 py-3 w-72">
@@ -71,8 +71,8 @@ export default function Featured() {
                         </svg></button>
                 </div>
             </div>
-        </a>
-    </div>
+        </Link>
+    </Link>
         ))}
       </div>
       <Link className="text-center text-2xl font-bold  underline my-4" href={`/products`}>VIEW MORE</Link>

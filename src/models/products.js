@@ -28,6 +28,9 @@ const productSchema = new mongoose.Schema({
   stock:Number,
   cupon:String,
   sku:String,
+  rating:Number,
+  costing:Number,
+  sells:Number,
 
 },{ timestamps: true });
 

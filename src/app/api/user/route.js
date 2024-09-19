@@ -3,7 +3,7 @@ import User from "@/models/User";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const { name, email, isAdmin, cart, uid } = await request.json();
+  const { name, email, isAdmin,profile, uid } = await request.json();
   await connectMongoDB();
 
   // Check if user already exists
@@ -13,6 +13,6 @@ export async function POST(request) {
   }
 
   // Create a new user
-  await User.create({ name, email, isAdmin, cart, uid });
+  await User.create({ name, email, isAdmin, profile, uid });
   return NextResponse.json({ message: "User Registered" }, { status: 201 });
 }

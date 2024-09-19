@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function Cart({ open, close }) {
   const dispatch = useDispatch();
-  const cartitems = useSelector((state) => state.cart);
+  const cartitems = useSelector((state) => state.cart.items);
   const totalPrice = useSelector(selectTotalPrice);
   const totalQuantity = useSelector(selectTotalQuantity);
 
@@ -88,9 +88,9 @@ export default function Cart({ open, close }) {
                                       <h3>
                                         <a href={product.href}>{product.productName}</a>
                                       </h3>
-                                      <p className="ml-4">${product.smartPrice ? product.smartPrice : product.price}</p>
+                                      <p className="ml-4">{product.smartPrice ? product.smartPrice : product.price} TK</p>
                                     </div>
-                                    <p className="mt-1 text-sm text-gray-500">{product.color}</p>
+                                    <p className="mt-1 text-sm text-gray-500">{product.size}</p>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
                                     <div className="flex">

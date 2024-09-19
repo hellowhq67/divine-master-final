@@ -11,6 +11,8 @@ import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
+import Loder from "@/components/loder/Loder";
+import axios from "axios";
 const style = {
   position: "absolute",
   top: "50%",
@@ -23,56 +25,71 @@ const style = {
   p: 4,
 };
 const ProductTable = () => {
+  const [totalItem, setTotalItem] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [open, setOpen] = useState(false);
-  const [productName, setProductName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [sku, setSku] = useState("");
-  const [shipping, setShipping] = useState(0);
-  const [shippingGlobal, setShippingGlobal] = useState(0);
-  const [shippingUSA, setShippingUSA] = useState(0);
-  const [shippingERU, setShippingERU] = useState(0);
-  const [date, SetDate] = useState("");
-  const [cupon, setCupon] = useState("");
-  const [color, setColor] = useState("");
-  const [priceUSD, setPriceUSD] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [smartprice, setsmartPrice] = useState(0);
-  const [quantity, setQuantity] = useState(0);
-  const [enabled, setEnabled] = useState(false);
-  const [enabled1, setEnabled1] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageUrl2, setImageUrl2] = useState("");
-  const [imageUrl3, setImageUrl3] = useState("");
-  const [imageUrl4, setImageUrl4] = useState("");
-  const [imageUrl5, setImageUrl5] = useState("");
-  const [selectedSizes, setSelectedSizes] = useState([]);
-  const [department, setDepartment] = useState("");
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
+  const [page, setPage] = useState(1);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [dropdownStates, setDropdownStates] = useState({});
+  const [totalPages, setTotalPages] = useState(1);
+  const [orders, setOrder] = useState([]);
+  const totalRevinew = 0;
+  const toggleDropdown = (id) => {
+    setDropdownStates((prevStates) => ({
+      ...prevStates,
+      [id]: !prevStates[id],
+    }));
+  };
 
-  const fetchProducts = async (page = 1, limit = 10) => {
-    try {
-      const response = await fetch(
-        `/api/admin/products?page=${page}&limit=${limit}`
-      );
-      const data = await response.json();
-      setProducts(data.products);
-      setTotalPages(data.totalPages); // Assume your API returns the total number of pages
-    } catch (error) {
-      console.error("Error fetching products:", error);
+  const handleClickOutside = (event) => {
+    if (!event.target.closest(".dropdown-button")) {
+      setDropdownStates({});
     }
   };
 
   useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage]);
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  const itemsPerPage = 10;
+
+  const handlePagination = (event, pageNum) => {
+    setPage(pageNum);
+  };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const [totalProductsResponse, productsResponse, orderResponse] =
+          await Promise.all([
+            axios.get("/api/admin/products/all"),
+            axios.get(`/api/admin/products?page=${page}&limit=${itemsPerPage}`),
+            axios.get(`/api/user/orders`),
+          ]);
+
+        const totalProducts = totalProductsResponse.data.products.length;
+        setTotalItem(totalProducts);
+        setProducts(productsResponse.data.products);
+        setOrder(orderResponse.data.orders);
+        console.log(orderResponse.data.orders);
+        const totalPagesCount = Math.ceil(totalProducts / 10);
+        setTotalPages(totalPagesCount);
+      } catch (error) {
+        toast(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [page]);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -92,11 +109,6 @@ const ProductTable = () => {
     } else {
       setSelectedProducts(products.map((product) => product._id));
     }
-  };
-
-  const handleEdit = (id) => {
-    // Implement edit functionality
-    console.log("Edit product with ID:", id);
   };
 
   const handleDelete = async (id) => {
@@ -122,11 +134,13 @@ const ProductTable = () => {
     }
   };
 
-  const handleView = (id) => {
-    // Implement view functionality
-    console.log("View product with ID:", id);
-  };
+  const totalSales = orders.reduce(
+    (accumulator, order) => accumulator + order.total_amount,
+    0
+  );
 
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItem);
   return (
     <>
       <Sidebar />
@@ -134,195 +148,408 @@ const ProductTable = () => {
       <div>
         <Navigation />
 
-        <div class="p-4 sm:ml-64">
-          <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={open}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: Backdrop }}
-            slotProps={{
-              backdrop: {
-                timeout: 500,
-              },
-            }}
-          >
-            <Fade in={open}>
-              <Box sx={style}>
-                <Typography
-                  id="transition-modal-title"
-                  variant="h6"
-                  component="h2"
-                >
-                  <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-                    Add a new product
-                  </h2>
-                </Typography>
-                <Typography
-                  id="transition-modal-description"
-                  sx={{ mt: 2 }}
-                ></Typography>
-              </Box>
-            </Fade>
-          </Modal>
-          <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-            <div class=" border-2 border-gray-200 flex items-center justify-center h-100 mb-4 rounded bg-gray-50 dark:bg-gray-800">
-              <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center py-4">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    className="border p-2 rounded"
-                  />
-                </div>
-                <table className="min-w-full bg-white">
-                  <thead>
-                    <tr>
-                      <th className="py-2">
-                        <input
-                          type="checkbox"
-                          checked={selectedProducts.length === products.length}
-                          onChange={handleSelectAll}
+        <div class="p-4 sm:ml-64 my-10">
+          <section class="bg-gray-50 dark:bg-gray-900 py-3 sm:py-5">
+            <div class="px-4 mx-auto max-w-screen-2xl lg:px-12">
+              <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+                <div class="flex flex-col px-4 py-3 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+                  <div class="flex items-center flex-1 space-x-4">
+                    <h5>
+                      <span class="text-gray-500">{`All Products:`}</span>
+                      <span class="dark:text-white">{totalItem}</span>
+                    </h5>
+                    <h5>
+                      <span class="text-gray-500">{`Total sales:`}</span>
+                      <span class="dark:text-white">{totalSales} TK</span>
+                    </h5>
+                  </div>
+                  <div class="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
+                    <button
+                      type="button"
+                      class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
+                    >
+                      <svg
+                        class="h-3.5 w-3.5 mr-2"
+                        fill="currentColor"
+                        viewbox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          clip-rule="evenodd"
+                          fill-rule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                         />
-                      </th>
-                      <th className="py-2">Image</th>
-                      <th className="py-2">Name</th>
-                      <th className="py-2">Price</th>
-                      <th className="py-2">Quantity</th>
-                      <th className="py-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {products
-                      .filter((product) =>
-                        product.productName
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                      )
-                      .map((product) => (
-                        <tr key={product._id} className="border-t">
-                          <td className="py-2 text-center">
+                      </svg>
+                      Add new product
+                    </button>
+                    <div
+                      type="button"
+                      class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        />
+                      </svg>
+
+                      <input
+                        placeholder="search itmes"
+                        type="text"
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <Link
+                      href={"/admin/forms"}
+                      type="button"
+                      class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                        />
+                      </svg>
+                      Add New
+                    </Link>
+                  </div>
+                </div>
+                <div class="overflow-x-auto">
+                  {loading ? (
+                    <Loder />
+                  ) : products.length === 0 ? (
+                    <div className="text-center text-gray-500">
+                      No items found. Please add items from the CRUD page.
+                    </div>
+                  ) : (
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
                             <input
                               type="checkbox"
-                              checked={selectedProducts.includes(product._id)}
-                              onChange={() => handleSelectProduct(product._id)}
+                              onChange={handleSelectAll}
+                              checked={
+                                selectedProducts.length === products.length
+                              }
                             />
-                          </td>
-                          <td className="py-2 text-center">
-                            <img
-                              src={product.productImage1}
-                              alt={product.productName}
-                              className="h-16"
-                            />
-                          </td>
-                          <td className="py-2 text-center">
-                            {product.productName}
-                          </td>
-                          <td className="py-2 text-center">{product.price}</td>
-                          <td className="py-2 text-center">
-                            {product.quantity}
-                          </td>
-                          <td className="py-2 text-center">
-                            <button
-                              className="text-green-700"
-                            >
-                            <Link href={`/product/${product._id}`}>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-6"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                                />
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                                />
-                              </svg>
-                            </Link>
-                            </button>
-                            <button className="text-blue-500 ml-2">
-                              <Link
-                                href={`/admin/products/table/update/${product._id}`}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke-width="1.5"
-                                  stroke="currentColor"
-                                  class="size-6"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                                  />
-                                </svg>
-                              </Link>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(product._id)}
-                              className="text-red-500 ml-2"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-6"
-                              >
-                                <path
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                                />
-                              </svg>
-                            </button>
-                          </td>
+                            <label for="checkbox-all" class="sr-only">
+                              checkbox
+                            </label>
+                          </th>
+
+                          <th scope="col" class="px-4 py-3">
+                            Product
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Category
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Stock
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Price
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Smart Price
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Rating
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Sales
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Sizes
+                          </th>
+                          <th scope="col" class="px-4 py-3">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                  </tbody>
-                </table>
-                <div className="flex justify-between items-center py-4">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() =>
-                      setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-                    }
-                    className="p-2 bg-gray-300 rounded"
-                  >
-                    Previous
-                  </button>
-                  <span>
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() =>
-                      setCurrentPage((prevPage) =>
-                        Math.min(prevPage + 1, totalPages)
-                      )
-                    }
-                    className="p-2 bg-gray-300 rounded"
-                  >
-                    Next
-                  </button>
+                      </thead>
+
+                      <tbody>
+                        {products
+                          .filter((product) =>
+                            product.productName
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((product) => (
+                            <tr class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                              <td class="w-4 px-4 py-3">
+                                <div class="flex items-center">
+                                  <input
+                                    id="checkbox-table-search-1"
+                                    type="checkbox"
+                                    checked={selectedProducts.includes(
+                                      product._id
+                                    )}
+                                    onChange={() =>
+                                      handleSelectProduct(product._id)
+                                    }
+                                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                  />
+
+                                  <label
+                                    for="checkbox-table-search-1"
+                                    class="sr-only"
+                                  >
+                                    checkbox
+                                  </label>
+                                </div>
+                              </td>
+                              <th
+                                scope="row"
+                                class="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                              >
+                                <img
+                                  src={product.productImage1}
+                                  alt="iMac Front Image"
+                                  class="w-auto h-8 mr-3"
+                                />
+                                {product.productName.slice(0, 16)}
+                              </th>
+                              <td class="px-4 py-2">
+                                <span class="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
+                                  {product.category}
+                                </span>
+                              </td>
+                              <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex items-center">
+                                  <div class="inline-block w-4 h-4 mr-2 bg-red-700 rounded-full"></div>
+                                  {product.stock}
+                                </div>
+                              </td>
+                              <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {product.price} BTD
+                              </td>
+                              <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {product.smartPrice} BTD
+                              </td>
+                              <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex items-center">
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5 text-yellow-400"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5 text-yellow-400"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5 text-yellow-400"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5 text-yellow-400"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5 text-yellow-400"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  <span class="ml-1 text-gray-500 dark:text-gray-400">
+                                    {product.rating}
+                                  </span>
+                                </div>
+                              </td>
+                              <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex items-center">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewbox="0 0 24 24"
+                                    fill="currentColor"
+                                    class="w-5 h-5 mr-2 text-gray-400"
+                                    aria-hidden="true"
+                                  >
+                                    <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
+                                  </svg>
+                                  {product.sells}
+                                </div>
+                              </td>
+                              <td class="px-4 py-2">
+                                {product.sizes[0].length}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="relative inline-block text-left">
+                                  <button
+                                    className="dropdown-button"
+                                    type="button"
+                                    onClick={() => toggleDropdown(product._id)}
+                                  >
+                                    Actions
+                                  </button>
+                                  {dropdownStates[product._id] && (
+                                    <div
+                                      className="absolute right-0 z-10 w-44 mt-2 origin-top-right bg-white border border-gray-300 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                      role="menu"
+                                      aria-orientation="vertical"
+                                      aria-labelledby="menu-button"
+                                      tabIndex="-1"
+                                    >
+                                      <div className="py-1" role="none">
+                                        <Link
+                                          href={`/admin/products/table/update/${product._id}`}
+                                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          role="menuitem"
+                                        >
+                                          Edit
+                                        </Link>
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            handleDelete(product._id)
+                                          }
+                                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          role="menuitem"
+                                        >
+                                          Delete
+                                        </button>
+                                        <Link
+                                          href={`/product/${product._id}`}
+                                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                          role="menuitem"
+                                        >
+                                          View
+                                        </Link>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
+                <nav
+                  className="flex flex-col items-start justify-between p-4 space-y-3 md:flex-row md:items-center md:space-y-0"
+                  aria-label="Table navigation"
+                >
+                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Showing{" "}
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {startItem}-{endItem}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {totalItem}
+                    </span>
+                  </span>
+                  <ul className="inline-flex items-stretch -space-x-px">
+                    <li>
+                      <button
+                        onClick={(event) =>
+                          handlePagination(event, currentPage - 1)
+                        }
+                        disabled={currentPage === 1}
+                        className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                      >
+                        <span className="sr-only">Previous</span>
+                        <svg
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </li>
+                    {Array.from({ length: totalPages }).map((_, index) => (
+                      <li key={index}>
+                        <button
+                          onClick={(event) =>
+                            handlePagination(event, index + 1)
+                          }
+                          className={`flex items-center justify-center px-3 py-2 text-sm leading-tight ${
+                            currentPage === index + 1
+                              ? "border text-primary-600 bg-primary-50 border-primary-300 hover:bg-primary-100 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                              : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                          }`}
+                        >
+                          {index + 1}
+                        </button>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        onClick={(event) =>
+                          handlePagination(event, currentPage + 1)
+                        }
+                        disabled={currentPage === totalPages}
+                        className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                      >
+                        <span className="sr-only">Next</span>
+                        <svg
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </>
