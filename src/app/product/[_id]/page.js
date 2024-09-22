@@ -4,7 +4,7 @@ export default async function Page({ params: { _id } }) {
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
-   
+    }
 
     const data = await response.json();
     console.log(data); // log the data for debugging
