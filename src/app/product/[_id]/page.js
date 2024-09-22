@@ -1,4 +1,4 @@
-lexport default async function Page({ params: { _id } }) {
+export default async function Page({ params: { _id } }) {
   try {
     const response = await fetch(`/api/admin/products/${_id}`);
     
