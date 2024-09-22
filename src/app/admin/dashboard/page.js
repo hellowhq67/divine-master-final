@@ -8,40 +8,40 @@ import Loder from '@/components/loder/Loder'; // Correct typo
 export const dynamic = "force-dynamic";
 
 export default function Page() {
-  const { user } = UseAuth();
+   const { user } = UseAuth();
   const [currentUser, setCurrentUser] = useState(null); // Use to store the current user
   const [loading, setLoading] = useState(true);
-  const userId = user ? user.uid : null;
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      if (!userId) {
+      if (!user) {
         setLoading(false);
         return;
       }
+
+      const userId = user.uid;
 
       try {
         const response = await axios.get(`/api/user/all-users/${userId}`);
         setCurrentUser(response.data.user); // Store the specific user
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error('Error fetching users:', error);
       } finally {
         setLoading(false);
       }
     };
 
     checkAuthentication();
-  }, [userId]);
+  }, [user]);
 
   if (loading) {
     return <Loder />;
   }
 
   // Ensure you're checking if the user is an admin
-  if (!currentUser || currentUser.isAdmin !== "Admin") {
+  if (!currentUser || currentUser.isAdmin !== 'Admin') {
     return <Restrict />;
   }
-
   return (
     <>
       <Dasborad />
