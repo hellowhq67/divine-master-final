@@ -708,7 +708,7 @@ export default function Products() {
                               href={``}
                               class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
                             >
-                              <Link href={ `https://divinemenswear.com/product/${product._id}`}
+                              <Link href={ `https://divinemenswear.com/product/${product._id}`}>
                                 <img
                                   class="h-80 w-72 object-cover rounded-t-xl"
                                   src={product.productImage1}
