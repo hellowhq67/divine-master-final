@@ -1,18 +1,24 @@
-import Nav from "@/components/Navbar/Nav";
-import React from "react";
-import ProductDetail from "@/components/Product Details/ProductDetail";
-import Footer from "@/components/Footer/Footer";
-
 export default async function Page({ params: { _id } }) {
-  const response = await fetch(`/api/admin/products/${_id}`);
-  const data = await response.json();
-  const product = data.products;
+  try {
+    const response = await fetch(`https://divinemenswear.com/api/admin/products/${_id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-  return (
-    <div>
-      <Nav />
-      <ProductDetail product={product} />
-      <Footer/>
-    </div>
-  );
+    const data = await response.json();
+    console.log(data); // log the data for debugging
+    const product = data.products;
+
+    return (
+      <div>
+        <Nav />
+        <ProductDetail product={product} />
+        <Footer />
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching product data:", error);
+    return <div>Failed to load product details.</div>;
+  }
 }
