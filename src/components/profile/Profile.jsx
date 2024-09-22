@@ -84,7 +84,7 @@ const Profile = () => {
       try {
         const response = await fetch(`/api/user/all-users/${userID}`);
         const data = await response.json();
-        console.log(data.user);
+   
         setUserProfile(data.user);
       } catch (error) {
         console.error("Error fetching addresses:", error);
@@ -104,7 +104,7 @@ const Profile = () => {
         // Filter orders based on userID
         const userOrders = ordersData.filter((order) => order.uid === userID);
 
-        console.log(userOrders);
+ 
         setOrders(userOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);

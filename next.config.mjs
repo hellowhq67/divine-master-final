@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+import { resolve } from 'path';
 
-    reactStrictMode: false,
+const nextConfig = {
+  output: 'standalone',
+  reactStrictMode: true,
+  cacheHandler: resolve('./cache-handler.js'),
+  cacheMaxMemorySize: 0,
 };
 
 export default nextConfig;

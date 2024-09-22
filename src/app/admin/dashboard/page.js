@@ -1,26 +1,28 @@
-'use client'
-import Dasborad from "@/components/admin/dashborad/Dashborad";
-import Sidebar from "@/components/admin/sidebar/Sidebar";
+'use client';
+import Dasborad from '@/components/admin/dashborad/Dashborad';
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { UseAuth } from "@/app/context/AuthContext";
 import axios from "axios";
-import Restrict from '@/components/admin/Restrict'
-import Loder from "@/components/loder/Loder";
+import Restrict from '@/components/admin/Restrict';
+import Loder from '@/components/loder/Loder'; // Correct typo
+export const dynamic = "force-dynamic";
+
 export default function Page() {
   const { user } = UseAuth();
-  const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // Use to store the current user
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const userId = user?user.uid:null;
+  const userId = user ? user.uid : null;
+
   useEffect(() => {
     const checkAuthentication = async () => {
-      if (!userId) return;
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const response = await axios.get(`/api/user/all-users/${userId}`);
-        setUsers(response.data.user);
-        console.log(response.data.user);
+        setCurrentUser(response.data.user); // Store the specific user
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -32,17 +34,17 @@ export default function Page() {
   }, [userId]);
 
   if (loading) {
-    return <Loder/>;
+    return <Loder />;
   }
 
-  if (!users || users.isAdmin !== "Admin") {
-    return <Restrict/>;
+  // Ensure you're checking if the user is an admin
+  if (!currentUser || currentUser.isAdmin !== "Admin") {
+    return <Restrict />;
   }
-
 
   return (
     <>
-      <Dasborad/>
+      <Dasborad />
     </>
   );
 }

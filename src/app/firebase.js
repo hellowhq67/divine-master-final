@@ -19,11 +19,11 @@ let storage;
 let db;
 let auth;
 
-if (typeof window !== "undefined") {
+
   app = initializeApp(firebaseConfig);
   storage = getStorage(app);
   db = getFirestore(app);
   auth = getAuth(app);
-}
+
 
 export { app, storage, db, auth };

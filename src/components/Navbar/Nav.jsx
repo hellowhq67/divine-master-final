@@ -95,6 +95,20 @@ function classNames(...classes) {
 }
 
 export default function Nav() {
+  useEffect(() => {
+    const fetchVisitorCount = async () => {
+      try {
+        const response = await fetch("/api/visitor-count");
+        const data = await response.json();
+     
+      } catch (error) {
+        console.error("Error fetching visitor count:", error);
+      }
+    };
+
+    fetchVisitorCount();
+  }, []);
+
   const { user, logOut } = UseAuth();
   const [open, setOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);

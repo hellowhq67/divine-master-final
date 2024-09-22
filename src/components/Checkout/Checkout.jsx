@@ -18,13 +18,13 @@ import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 const Checkout = () => {
-  const router =useRouter()
+  const router =useRouter();
   const [loading, setLoading] = useState(true);
   const [loader, setLoader] = useState(false);
   const [show, setShow] = useState(false);
   const { user, logOut } = UseAuth();
   const dispatch = useDispatch();
-  const cartitems = useSelector((state) => state.cart);
+  const cartitems = useSelector((state) => state.cart.items);
   const totalPrice = useSelector(selectTotalPrice);
   const totalQuantity = useSelector(selectTotalQuantity);
   const [email, setEmail] = useState("");
