@@ -4,7 +4,7 @@ import ProductDetail from "@/components/Product Details/ProductDetail";
 import Footer from "@/components/Footer/Footer";
 
 export default async function Page({ params: { _id } }) {
-  const response = await fetch(`http://localhost:3000/api/admin/products/${_id}`);
+  const response = await fetch(`/api/admin/products/${_id}`);
   const data = await response.json();
   const product = data.products;
 
