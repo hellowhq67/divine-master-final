@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import ProductDetail from "@/components/Product Details";
+import ProductDetail from "@/components/Product Details/ProductDetail";
 import Nav from "@/components/Navbar/Nav";
 import Footer from "@/components/Footer/Footer";
 
