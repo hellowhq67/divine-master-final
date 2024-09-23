@@ -1,7 +1,8 @@
 import axios from "axios";
-import Nav from "../../../components/Nav";
-import ProductDetail from "../../../components/ProductDetail";
-import Footer from "../../../components/Footer";
+
+import ProductDetail from "@/components/ProductDetail";
+import Nav from "@/components/Navbar/Nav";
+import Footer from "@/components/Footer/Footer";
 
 // Server Component (data fetching is handled on the server side)
 export default async function ProductPage({ params }) {
