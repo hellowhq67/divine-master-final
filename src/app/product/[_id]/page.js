@@ -1,14 +1,15 @@
-export default async function Page({ params: { _id } }) {
-  try {
-    const response = await fetch(`/api/admin/products/${_id}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+import axios from "axios";
+import Nav from "../../../components/Nav";
+import ProductDetail from "../../../components/ProductDetail";
+import Footer from "../../../components/Footer";
 
-    const data = await response.json();
-    console.log(data); // log the data for debugging
-    const product = data.products;
+// Server Component (data fetching is handled on the server side)
+export default async function ProductPage({ params }) {
+  const { _id } = params; // access the dynamic route parameter
+
+  try {
+    const response = await axios.get(`/api/admin/products/${_id}`);
+    const product = response.data.products;
 
     return (
       <div>
