@@ -98,7 +98,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await axios.get(`/api/user/orders/all`);
+        const response = await axios.get(`/api/user/orders`);
         const ordersData = response.data.orders;
 
         // Filter orders based on userID
