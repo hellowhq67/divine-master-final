@@ -6,10 +6,10 @@ import Footer from "@/components/Footer/Footer";
 
 // Server Component (data fetching is handled on the server side)
 export default async function ProductPage({ params }) {
-  const { _id } = params; // access the dynamic route parameter
+  const { id } = params; // access the dynamic route parameter
 
   try {
-    const response = await axios.get(`/api/admin/products/${_id}`);
+    const response = await axios.get(`/api/admin/products/${id}`);
     const product = response.data.products;
 
     return (
