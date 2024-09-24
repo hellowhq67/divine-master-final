@@ -81,10 +81,10 @@ const cartSlice = createSlice({
       // For example, "SAVE10" gives a 10% discount
       if (couponCode === "DIVINEWELCOME") {
         state.discount = 0.30; // 10% discount
-        
+        toast.success('You get 30% discount ')
       } else {
         state.discount = 0;
-        
+        toast.error("invalid  cupon")
       }
     }
   }
