@@ -1,11 +1,9 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import style from "./style.module.css";
-import React, { useRef, useState } from "react";
+import React from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -31,8 +29,14 @@ export default function Banner() {
     >
       <SwiperSlide>
         <div className={style.bannerConteiner}>
+          <img
+            src="/assests/banner/img33.jpg"
+            alt="Banner 1"
+            width={1300}
+            height={700}
+            className={style.bannerImage}
+          />
           <div className={style.bannerTextConteiner}>
-        
             <Link className={style.button} href={"/products"}>
               Shop Now
             </Link>
@@ -41,15 +45,20 @@ export default function Banner() {
       </SwiperSlide>
       <SwiperSlide>
         <div className={style.bannerConteiner}>
+          <img
+            src="/assests/banner/b1.jpg"
+            alt="Banner 2"
+            width={1300}
+            height={700}
+            className={style.bannerImage}
+          />
           <div className={style.bannerTextConteiner}>
-        
             <Link className={style.button} href={"/products"}>
               Shop Now
             </Link>
           </div>
         </div>
       </SwiperSlide>
-
     </Swiper>
   );
 }
