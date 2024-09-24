@@ -1,3 +1,32 @@
+import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify"; // Import Toastify
+
+// Helper function to save the cart to local storage
+const saveToLocalStorage = (cart) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+}
+
+// Helper function to load the cart from local storage
+const loadFromLocalStorage = () => {
+  if (typeof window !== 'undefined') {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  }
+  return []; // Return an empty array during SSR
+}
+
+// Helper functions to calculate total price and quantity
+const calculateTotalPrice = (cart) => {
+  return cart.reduce((total, item) => 
+    total + (item.smartPrice ? item.smartPrice : item.price) * item.quantity, 0);
+}
+
+const calculateTotalQuantity = (cart) => {
+  return cart.reduce((total, item) => total + item.quantity, 0);
+}
+
 // Predefined list of valid coupons and their discounts
 const validCoupons = {
   "DIVINEWELCOME": 0.30,  // 30% discount
