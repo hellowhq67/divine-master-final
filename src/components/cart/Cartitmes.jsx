@@ -256,7 +256,7 @@ export default function Cartitems() {
                       Original price
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      ${totalPrice}
+                      TK{totalPrice}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4">
