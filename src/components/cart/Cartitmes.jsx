@@ -1,4 +1,4 @@
-"use client";
+mdse client";
 import { useState } from "react";
 import {
   remove,
@@ -34,7 +34,7 @@ export default function Cartitems() {
     if (voucherCode === dummyCoupon.code) {
       // Apply the dummy coupon discount
       dispatch(applyCoupon({ couponCode: dummyCoupon.code }));
-      toast.success(`Coupon applied! You saved ${dummyCoupon.discount}%`);
+      toast.success(`Coupon applied! You saved TK{dummyCoupon.discount}%`);
     } else {
       console.error("Invalid coupon code");
     }
@@ -78,7 +78,7 @@ export default function Cartitems() {
              
               {cartitems.map((product) => (
                 <div className="space-y-6">
-                  <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                  <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 md:p-6">
                     <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                       <a href="#" className="shrink-0 md:order-1">
                         <img
@@ -88,7 +88,7 @@ export default function Cartitems() {
                         />
                         <img
                           className="hidden h-20 w-20 dark:block"
-                          src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front-dark.svg"
+                          src={product.productImage1}
                           alt="imac image"
                         />
                       </a>
@@ -260,7 +260,7 @@ export default function Cartitems() {
                       Original price
                     </dt>
                     <dd className="text-base font-medium text-gray-900">
-                      ${totalPrice}
+                      TK{totalPrice}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4">
@@ -277,7 +277,7 @@ export default function Cartitems() {
                     </dt>
                     <dd className="text-base font-medium text-green-600">
                       {voucherCode === dummyCoupon.code
-                        ? `${dummyCoupon.discount}%`
+                        ? `TK{dummyCoupon.discount}%`
                         : "$0"}
                     </dd>
                   </dl>
