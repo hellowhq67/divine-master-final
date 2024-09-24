@@ -23,17 +23,21 @@ export default function Cartitems() {
 
   // Define a dummy coupon for testing
   const dummyCoupon = {
-    code: "TESTCOUPON1",
-    discount: 10, // 10% discount
+    code: "DIVINEWELCOME",
+    discount: 30, // 10% discount
   };
 
   const handleApplyCoupon = (e) => {
+    e.preventDefault();
 
-    // Check if the entered che dummy coupon 
+    // Check if the entered coupon code matches the dummy coupon code
+    if (voucherCode === dummyCoupon.code) {
       // Apply the dummy coupon discount
-      dispatch(applyCoupon({ couponCode:voucherCode  }));
-
- 
+      dispatch(applyCoupon({ couponCode: dummyCoupon.code }));
+      toast.success(`Coupon applied! You saved ${dummyCoupon.discount}%`);
+    } else {
+      console.error("Invalid coupon code");
+    }
   };
 
   const favorites = useSelector((state) => state.favorites);
@@ -74,7 +78,7 @@ export default function Cartitems() {
              
               {cartitems.map((product) => (
                 <div className="space-y-6">
-                  <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700  md:p-6">
+                  <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                     <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                       <a href="#" className="shrink-0 md:order-1">
                         <img
@@ -82,7 +86,7 @@ export default function Cartitems() {
                           src={product.productImage1}
                           alt="imac image"
                         />
-                  
+
                       </a>
 
                       <label for="counter-input" className="sr-only">
@@ -270,7 +274,7 @@ export default function Cartitems() {
                     <dd className="text-base font-medium text-green-600">
                       {voucherCode === dummyCoupon.code
                         ? `${dummyCoupon.discount}%`
-                        : "Tk 0"}
+                        : "0"}
                     </dd>
                   </dl>
                  
