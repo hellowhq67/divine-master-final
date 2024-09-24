@@ -1,37 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "react-toastify"; // Import Toastify
-
-// Helper function to save the cart to local storage
-const saveToLocalStorage = (cart) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-}
-
-// Helper function to load the cart from local storage
-const loadFromLocalStorage = () => {
-  if (typeof window !== 'undefined') {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  }
-  return []; // Return an empty array during SSR
-}
-
-// Helper functions to calculate total price and quantity
-const calculateTotalPrice = (cart) => {
-  return cart.reduce((total, item) => 
-    total + (item.smartPrice ? item.smartPrice : item.price) * item.quantity, 0);
-}
-
-const calculateTotalQuantity = (cart) => {
-  return cart.reduce((total, item) => total + item.quantity, 0);
-}
+// Predefined list of valid coupons and their discounts
+const validCoupons = {
+  "DIVINEWELCOME": 0.30,  // 30% discount
+  "DIVINESAVE10": 0.10,   // 10% discount
+  "DIVINEFEST": 0.20,     // 20% discount
+};
 
 const cartSlice = createSlice({
   name: "Cart",
   initialState: {
     items: loadFromLocalStorage(),
-    discount: 0, // Store discount amount
+    discount: 0, // Store discount percentage (e.g., 0.10 for 10%)
+    appliedCoupon: "", // Track the applied coupon
   },
   reducers: {
     add(state, action) {
@@ -77,14 +56,14 @@ const cartSlice = createSlice({
     applyCoupon(state, action) {
       const { couponCode } = action.payload;
 
-      // Apply a discount based on the coupon code
-      // For example, "SAVE10" gives a 10% discount
-      if (couponCode === "DIVINEWELCOME") {
-        state.discount = 0.30; // 10% discount
-        toast.success('You get 30% discount ')
+      if (validCoupons[couponCode]) {
+        state.discount = validCoupons[couponCode]; // Set the discount
+        state.appliedCoupon = couponCode; // Store the applied coupon
+        toast.success(`Coupon applied! You get a ${state.discount * 100}% discount.`);
       } else {
-        state.discount = 0;
-        toast.error("invalid  cupon")
+        state.discount = 0; // Reset discount
+        state.appliedCoupon = ""; // Clear the applied coupon
+        toast.error("Invalid or expired coupon");
       }
     }
   }
