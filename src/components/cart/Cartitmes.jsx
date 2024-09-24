@@ -1,4 +1,4 @@
-mdse client";
+"use client";
 import { useState } from "react";
 import {
   remove,
