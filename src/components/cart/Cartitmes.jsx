@@ -22,23 +22,16 @@ export default function Cartitems() {
   const [voucherCode, setVoucherCode] = useState(""); // State to hold the coupon code
 
   // Define a dummy coupon for testing
-  const dummyCoupon = {
-    code: "DIVINEWELCOME",
-    discount: 30, // 10% discount
-  };
+ 
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
 
     // Check if the entered coupon code matches the dummy coupon code
-    if (voucherCode === dummyCoupon.code) {
+    
       // Apply the dummy coupon discount
-      dispatch(applyCoupon({ couponCode: dummyCoupon.code }));
-      toast.success(`Coupon applied! You saved ${dummyCoupon.discount}%`);
-    } else {
-      console.error("Invalid coupon code");
-    }
-  };
+      dispatch(applyCoupon({ couponCode: voucherCode }));
+     };
 
   const favorites = useSelector((state) => state.favorites);
 
