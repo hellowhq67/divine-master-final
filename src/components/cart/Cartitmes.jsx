@@ -23,8 +23,8 @@ export default function Cartitems() {
 
   // Define a dummy coupon for testing
   const dummyCoupon = {
-    code: "TESTCOUPON1",
-    discount: 10, // 10% discount
+    code: "DIVINEWELCOME",
+    discount: 30, // 10% discount
   };
 
   const handleApplyCoupon = (e) => {
