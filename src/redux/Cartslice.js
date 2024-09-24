@@ -79,12 +79,12 @@ const cartSlice = createSlice({
 
       // Apply a discount based on the coupon code
       // For example, "SAVE10" gives a 10% discount
-      if (couponCode === "SAVE10") {
-        state.discount = 0.10; // 10% discount
-        toast.success('Coupon applied! You saved 10%');
+      if (couponCode === "DIVINEWELCOME") {
+        state.discount = 0.30; // 10% discount
+        
       } else {
         state.discount = 0;
-        toast.error('Invalid coupon code');
+        
       }
     }
   }
