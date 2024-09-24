@@ -32,8 +32,7 @@ export default function Banner() {
       <SwiperSlide>
         <div className={style.bannerConteiner}>
           <div className={style.bannerTextConteiner}>
-            <h1 className={style.title}>UP TO 70% OF AT </h1>
-            <h2 className={style.subtitle}>MENS COLLECTION</h2>
+        
             <Link className={style.button} href={"/products"}>
               Shop Now
             </Link>
@@ -43,8 +42,7 @@ export default function Banner() {
       <SwiperSlide>
         <div className={style.bannerConteiner}>
           <div className={style.bannerTextConteiner}>
-            <h1 className={style.title}>UP TO 70% OF AT </h1>
-            <h2 className={style.subtitle}>MENS COLLECTION</h2>
+        
             <Link className={style.button} href={"/products"}>
               Shop Now
             </Link>
