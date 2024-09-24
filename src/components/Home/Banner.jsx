@@ -30,10 +30,10 @@ export default function Banner() {
       <SwiperSlide>
         <div className={style.bannerConteiner}>
           <img
-            src="/assests/banner/img33.jpg"
+            src="../../assests/banner/img33.jpg"
             alt="Banner 1"
             width={1300}
-            height={700}
+            height={400}
             className={style.bannerImage}
           />
           <div className={style.bannerTextConteiner}>
@@ -46,10 +46,10 @@ export default function Banner() {
       <SwiperSlide>
         <div className={style.bannerConteiner}>
           <img
-            src="/assests/banner/b1.jpg"
+            src="../../assests/banner/img33.jpg"
             alt="Banner 2"
             width={1300}
-            height={700}
+            height={400}
             className={style.bannerImage}
           />
           <div className={style.bannerTextConteiner}>
