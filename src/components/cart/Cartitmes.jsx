@@ -18,7 +18,7 @@ export default function Cartitems() {
   const cartitems = useSelector((state) => state.cart.items);
   const totalPrice = useSelector(selectTotalPrice);
   const totalQuantity = useSelector(selectTotalQuantity);
-
+  const discount  = useSelector((state) => state.cart.items);
   const [voucherCode, setVoucherCode] = useState(""); // State to hold the coupon code
 
   // Define a dummy coupon for testing
@@ -265,9 +265,7 @@ export default function Cartitems() {
                       Savings
                     </dt>
                     <dd className="text-base font-medium text-green-600">
-                      {voucherCode === dummyCoupon.code
-                        ? `${dummyCoupon.discount}%`
-                        : "0"}
+                      {discount }
                     </dd>
                   </dl>
                  
@@ -275,11 +273,7 @@ export default function Cartitems() {
                     <dt className="text-base font-bold text-gray-900">Total</dt>
                     <dd className="text-base font-bold text-gray-900">
                       TK
-                      {totalPrice *
-                        (1 -
-                          (voucherCode === dummyCoupon.code
-                            ? dummyCoupon.discount / 100
-                            : 0))}
+                      {totalPrice }
                     </dd>
                   </dl>
                 </div>
