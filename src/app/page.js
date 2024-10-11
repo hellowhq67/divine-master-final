@@ -5,20 +5,27 @@ import Poster from "@/components/Home/Poster";
 import Featured from "@/components/Home/Featured";
 import Footer from "@/components/Footer/Footer";
 import Banner2 from "@/components/Home/Banner2";
-import Fetured from "@/components/Fetured/Fetured";
+import Banner3 from "@/components/Home/Banner3";
+import Banner4 from "@/components/Home/Banner4";
 
+import Fetured from "@/components/Fetured/Fetured";
+import Navigation from '@/components/Navbar/Navigation'
+import Links from '@/components/Home/Links'
 export default function Home() {
 
 
   return (
     <>
-      <Nav />
-      <div className="my-14">
+      <Navigation/>
+      <div className="">
         <Banner />
-        <Poster />
-        <Featured />
-        <Fetured />
         <Banner2 />
+        <Links/>
+        <Poster/>
+        <Fetured />
+      
+        <Banner3/>
+       
       </div>
      
       <Footer />
