@@ -12,18 +12,38 @@ export async function GET(request) {
 
     // Parse the request URL to extract query parameters
     const requestUrl = new URL(request.url);
-    const page = requestUrl.searchParams.get('page') || 1;
-    const limit = requestUrl.searchParams.get('limit') || 10;
+    const page = requestUrl.searchParams.get("page") || 1;
+    const limit = requestUrl.searchParams.get("limit") || 10;
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Fetch products from the database with pagination
-    const products = await Product.find({}).skip(skip).limit(parseInt(limit));
+    // Extract search queries (productName, category, subcategory)
+    const productName = requestUrl.searchParams.get("productName");
+    const category = requestUrl.searchParams.get("category");
+    const subcetagory = requestUrl.searchParams.get("subcategory");
+
+    // Build the search query
+    const searchQuery = {};
+
+    if (productName) {
+      searchQuery.productName = { $regex: productName, $options: "i" }; // Case-insensitive match
+    }
+
+    if (category) {
+      searchQuery.category = category;
+    }
+
+    if (subcetagory) {
+      searchQuery.subcategory = subcetagory;
+    }
+
+    // Fetch products based on the search query with pagination
+    const products = await Product.find(searchQuery).skip(skip).limit(parseInt(limit));
 
     // Fetch recent views (Mocked with random products for now)
     const recentViews = await Product.find({}).limit(5); // Mock recent views
 
     // Fetch related products based on category or tags (e.g., using category)
-    const relatedCategory = requestUrl.searchParams.get('category');
+    const relatedCategory = requestUrl.searchParams.get("category");
     let relatedProducts = [];
 
     if (relatedCategory) {
