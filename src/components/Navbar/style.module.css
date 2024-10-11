@@ -1,0 +1,365 @@
+/* style.module.css */
+
+/* Navigation Bar */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(255, 255, 255);
+  padding: 1rem 2rem;
+  width: 100%;
+  z-index: 999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out; /* Smooth transition for all properties */
+}
+.MobileMenuLink{
+  display: none;
+}
+.MobileMenuLink2{
+  display: none;
+}
+/* Fixed Navigation Bar */
+.fixedNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out; /* Ensure smooth transition when fixed */
+}
+
+/* Logo Styling */
+.Logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+
+/* Navigation Links */
+.NavigationLink {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Individual Menu Item */
+.menuItem {
+  position: relative;
+  margin: 0 15px;
+}
+.loading {
+  padding: 10px;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  padding: 10px;
+  text-align: center;
+  color: red;
+}
+/* Navigation Link Styling */
+.navLink {
+  font-family: sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+  padding: 0.5rem 0;
+  display: inline-block;
+  transition: border-bottom 0.3s, color 0.3s;
+  position: relative;
+}
+
+/* Hover Effect: Bottom Border */
+.navLink::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #000;
+  transition: width 0.3s;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+/* Mega Menu Container */
+.megaMenu {
+  position: absolute;
+  top: 100%;
+  left: -600%;
+  width: 100vw; /* Adjusted to align properly */ /* Cover the entire viewport width */
+  background-color: #f9f9f9;
+  padding: 2rem 4rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: block;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Mega Menu Inner Container */
+.megaContainer {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+/* Mega Menu Columns */
+.megaColumn {
+  flex: 1;
+  min-width: 200px;
+  border-right: 1px solid black;
+}
+
+.megaColumn h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: black;
+  font: bold;
+  text-decoration: underline;
+
+}
+
+.megaColumn a {
+  display: block;
+  margin-bottom: 0.5rem;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.2s;
+}
+
+.megaColumn a:hover {
+  color: #000;
+}
+.mobileMenu{
+  display: none;
+}
+/* Info Section */
+.Info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Search Input */
+.searchInput {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s;
+  width: 200px; /* Adjust width as needed */
+}
+
+.searchInput:focus {
+  border-color: #333;
+}
+
+/* Search Container */
+.searchContainer {
+  position: relative;
+}
+
+/* Search Icon */
+.searchIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #888;
+}
+
+/* Search Result Container */
+.searchResult {
+  background-color: #fffafa; /* Light red background */
+  width: 20rem; /* Full width of the search container */
+  max-height: 200px; /* Maximum height */
+  position: absolute; /* Position it absolutely */
+  top: 100%; /* Position it directly below the search input */
+  left: 0;
+  right: 0;
+  display: none; /* Hidden by default */
+  z-index: 1000; /* Ensure it's above other elements */
+  border-radius: 8px; /* Rounded corners */
+  overflow-y: auto; /* Scroll if content exceeds max-height */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* When Search is Open */
+.openSearch {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Suggestions List */
+.suggestionsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestionItem {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.suggestionItem:hover {
+  background-color: #fefefe;
+}
+
+.suggestionItem a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+/* No Results Found */
+.noResults {
+  padding: 0.5rem 1rem;
+  color: #555;
+}
+.Menu{
+  position: relative;
+  cursor: pointer;
+}
+.profileMenu{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;  
+  padding: 1rem ;
+  transform: translateY(-200%);
+  transition: .3s ease;
+}
+.Menu:hover .profileMenu{
+  transform: translateY(0%);
+}
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .megaContainer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .megaMenu {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .NavigationLink {
+    display: none; /* Hide navigation links on small screens */
+  }
+
+  .Info {
+    gap: 1rem;
+  }
+  .nav{
+    display: none;
+  }
+  .mobileMenu{
+    display:block;
+
+  }
+.MobileMenuLink{
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  transform: translate(-200%);
+  transition: .4s ease-out;
+  display: flex;
+  flex-direction: column;
+
+}
+.openMenu{
+  transform: translatex(0);
+}
+.MobileLogo{
+  text-align: center;
+  padding: 1rem;
+  font-size: 29px;
+  border-bottom: 1px solid black;
+}
+.MobileMenuLink ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 2rem;
+  
+}
+.MobileMenuLink ul a{
+  font-size: 1.5rem;
+  font:bold;
+}
+.MobileMenuLink2{
+  position: absolute;
+  z-index: 2000;
+  background-color: white;
+  height: 100vh;
+  width: 100vw;
+  top: 0%;
+  left: 0%;
+  transform: translatex(-200%);
+  transition: .4s ease-in-out;
+  display: flex;
+  flex-direction: column;
+
+}
+ .openMenu1{
+  transform: translatex(0%);
+
+
+}
+
+.MobileMenuLink2 ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 2rem;
+  
+}
+.MobileMenuLink2 ul a{
+  font-size: 1.5rem;
+  font:bold;
+}
+  /* Optionally, add a hamburger menu here for mobile navigation */
+}
+
+/* Animation for Mega Menu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Prevent Content Jump When Nav is Fixed */
+.content {
+  padding-top: 80px; /* Adjust based on your nav height */
+}
