@@ -11,7 +11,7 @@ export default function Banner() {
     Image: Img1,
     title: "",
     link: "/products",
-    link2: "/",
+    link2: "/products",
   };
   return (
     <div className={style.bannerMain}>
