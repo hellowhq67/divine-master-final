@@ -10,7 +10,7 @@ export default function Banner() {
   const data = {
     Image: Img1,
     title: "",
-    link: "/product",
+    link: "/products",
     link2: "/",
   };
   return (
