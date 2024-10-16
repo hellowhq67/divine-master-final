@@ -7,7 +7,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 import "swiper/css/pagination";
-import Icon from "./taka.png";
 import styles from "./styles.module.css";
 import Image from "next/image";
 // Import required modules
