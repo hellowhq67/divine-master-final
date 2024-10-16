@@ -272,14 +272,28 @@
   }
   .nav{
     display: none;
+  
   }
   .mobileMenu{
     display:block;
+    position: fixed;
+    top: 0;
+    background: white;
+    width: 100vw;
+    z-index: 500;
 
   }
+
+  .Close{
+    position: absolute;
+    top: 4%;
+    right: 4%;
+   
+  }
+
 .MobileMenuLink{
   position: absolute;
-  z-index: 1000;
+  z-index:501;
   background-color: white;
   height: 100vh;
   width: 100vw;
