@@ -70,7 +70,7 @@ export default function Login() {
                     <div class="flex flex-col items-center">
                       <button
                         onClick={handleSignIn}
-                        class="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                        class="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-black text-white flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                       >
                         <div class="bg-white p-2 rounded-full">
                           <svg class="w-4" viewBox="0 0 533.5 544.3">
@@ -98,7 +98,7 @@ export default function Login() {
                     <div class="flex flex-col items-center my-2">
                       <button
                         onClick={handleSignInWithFb}
-                        class="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
+                        class="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-black text-white flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
                       >
                         <div class="bg-white p-2 rounded-full">
                           <img
@@ -110,64 +110,7 @@ export default function Login() {
                         <span class="ml-4">Sign Up with Facebook</span>
                       </button>
                     </div>
-                    <div class="my-12 border-b text-center">
-                      <div class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-                        Or Create account with Email
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="mx-auto max-w-xs">
-                      <input
-                        className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                        type="name"
-                        name="email"
-                        id="email"
-                        placeholder="Your Full Name"
-                        onChange={(e) => setUserName(e.target.value)}
-                      />
-                      <input
-                        className="w-full my-2 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                        type="email"
-                        name="email"
-                        id="email"
-                        placeholder="Email"
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                      <input
-                        className="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
-                        type="password"
-                        name="password"
-                        id="password"
-                        placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                      <button
-                        type="submit"
-                        className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
-                      >
-                        <svg
-                          className="w-6 h-6 -ml-2"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                          <circle cx="8.5" cy="7" r="4" />
-                          <path d="M20 8v6M23 11h-6" />
-                        </svg>
-                        <span className="ml-3">Sign Up</span>
-                      </button>
-                      <div className="flex items-center  justify-center mx-2">
-                        <span className="text-center">
-                          Already Have An Account?{" "}
-                          <Link className="underline" href={"/login"}>
-                            Sign In
-                          </Link>
-                        </span>
-                      </div>
-                    </form>
+                   
                   </div>
                   <div class="w-full flex-1 mt-8">
                     <div class="my-12 border-b text-center">
@@ -195,7 +138,7 @@ export default function Login() {
                       />
                       <button
                         type="submit"
-                        className="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
+                        className="mt-5 tracking-wide font-semibold bg-black text-gray-100 w-full py-4 rounded-lg hover:bg-gray-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none"
                       >
                         <svg
                           className="w-6 h-6 -ml-2"
@@ -209,7 +152,7 @@ export default function Login() {
                           <circle cx="8.5" cy="7" r="4" />
                           <path d="M20 8v6M23 11h-6" />
                         </svg>
-                        <span className="ml-3">Sign Up</span>
+                        <span className="ml-3">Login</span>
                       </button>
                     </form>
                   </div>
