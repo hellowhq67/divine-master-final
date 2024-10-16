@@ -12,7 +12,22 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Cart from "../cart/Cart";
-
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  height:"50vh",
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 // Utility function for debouncing
 const debounce = (func, delay) => {
   let timeoutId;
@@ -26,7 +41,7 @@ const debounce = (func, delay) => {
 
 export default function Navigation() {
   const [activeMenu, setActiveMenu] = useState(null);
-  const [mobileMenu,setMobileMenu] =useState(false)
+  const [mobileMenu, setMobileMenu] = useState(false);
   const [menu1, setMenu1] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -34,6 +49,9 @@ export default function Navigation() {
   const [searchResults, setSearchResults] = useState([]);
   const { user, logOut } = UseAuth();
   const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const [cartOpen, setCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // For error handling
@@ -45,8 +63,8 @@ export default function Navigation() {
 
   const openMenu = () => setMenu1(true);
   const closeMenu = () => setMenu1(false);
-  const openMobileMenu = () =>setMobileMenu(true)
-  const closeMobileMenu=()=>setMobileMenu(false)
+  const openMobileMenu = () => setMobileMenu(true);
+  const closeMobileMenu = () => setMobileMenu(false);
   const openCart = () => setCartOpen(true);
   const closeCart = () => setCartOpen(false);
   const handleMouseEnter = (menu) => {
@@ -136,7 +154,9 @@ export default function Navigation() {
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/products?productName=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `/api/admin/products?productName=${encodeURIComponent(query)}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch search results");
       }
@@ -159,7 +179,10 @@ export default function Navigation() {
   };
 
   // Debounced version of fetchSearchResults
-  const debouncedFetchSearchResults = useCallback(debounce(fetchSearchResults, 300), []);
+  const debouncedFetchSearchResults = useCallback(
+    debounce(fetchSearchResults, 300),
+    []
+  );
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -170,7 +193,60 @@ export default function Navigation() {
   return (
     <div className="w-full">
       <Header />
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+           Search Product With Name Or Cetagory
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <div className={styles.searchContainer} ref={searchRef}>
+            <input
+              type="text"
+              placeholder="Search"
+              className={styles.searchInput}
+              value={searchInput}
+              onChange={handleSearchChange}
+              onFocus={handleShowSearch}
+            />
+            <MagnifyingGlassIcon
+              style={{ width: "20px" }}
+              className={styles.searchIcon}
+            />
 
+            {showSearch && (
+              <div
+                className={`${styles.searchResult} ${
+                  showSearch ? styles.openSearch : ""
+                }`}
+              >
+                {loading ? (
+                  <div className={styles.loading}>Loading...</div>
+                ) : error ? (
+                  <div className={styles.error}>{error}</div>
+                ) : searchResults.length > 0 ? (
+                  <ul className={styles.suggestionsList}>
+                    {searchResults.map((result) => (
+                      <li key={result._id} className={styles.suggestionItem}>
+                        <Link href={`/product/${result._id}`} passHref>
+                          {result.productName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className={styles.noResults}>No results found</div>
+                )}
+              </div>
+            )}
+          </div>
+          </Typography>
+        </Box>
+      </Modal>
       <nav className={`${styles.nav} ${isFixed ? styles.fixedNav : ""}`}>
         <Link className={styles.Logo} href="/">
           DIVINE
@@ -195,7 +271,6 @@ export default function Navigation() {
                     <Link href="/category/bottoms">Bottoms</Link>
                     <Link href="/category/accessories">Accessories</Link>
                     <Link href="/category/footwear">Footwear</Link>
-
                   </div>
                   <div className={styles.megaColumn}>
                     <h3>Sub Cetagory</h3>
@@ -211,13 +286,12 @@ export default function Navigation() {
                     <Link href="/products">Sale Items</Link>
                     <Link href="/products">Popular</Link>
                   </div>
-              
                 </div>
               </div>
             )}
           </li>
- {/* WINTER Link with Mega Menu */}
- <li
+          {/* WINTER Link with Mega Menu */}
+          <li
             onMouseEnter={() => handleMouseEnter("WINTER")}
             onMouseLeave={handleMouseLeave}
             className={styles.menuItem}
@@ -241,23 +315,17 @@ export default function Navigation() {
                     <Link href="/category/winter">Sneakers</Link>
                     <Link href="/category/winter">Hats</Link>
                   </div>
-        category
+                  category
                 </div>
               </div>
             )}
           </li>
           {/* ALL Link with Mega Menu */}
-          <li
-       
-            className={styles.menuItem}
-          >
+          <li className={styles.menuItem}>
             <Link href="/products" className={styles.navLink}>
               ALL
             </Link>
-           
           </li>
-
-         
 
           <li className="px-2">
             <Link href="/tops" className="font-medium text-gray-700">
@@ -278,38 +346,42 @@ export default function Navigation() {
         <div className={styles.Info}>
           {/* Search Input and Results */}
           <div className={styles.searchContainer} ref={searchRef}>
-        <input
-          type="text"
-          placeholder="Search"
-          className={styles.searchInput}
-          value={searchInput}
-          onChange={handleSearchChange}
-          onFocus={handleShowSearch}
-        />
-        <MagnifyingGlassIcon style={{width:"20px"}} className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search"
+              className={styles.searchInput}
+              value={searchInput}
+              onChange={handleSearchChange}
+              onFocus={handleShowSearch}
+            />
+        
 
-        {showSearch && (
-          <div className={`${styles.searchResult} ${showSearch ? styles.openSearch : ""}`}>
-            {loading ? (
-              <div className={styles.loading}>Loading...</div>
-            ) : error ? (
-              <div className={styles.error}>{error}</div>
-            ) : searchResults.length > 0 ? (
-              <ul className={styles.suggestionsList}>
-                {searchResults.map((result) => (
-                  <li key={result._id} className={styles.suggestionItem}>
-                    <Link href={`/product/${result._id}`} passHref>
-                      {result.productName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className={styles.noResults}>No results found</div>
+            {showSearch && (
+              <div
+                className={`${styles.searchResult} ${
+                  showSearch ? styles.openSearch : ""
+                }`}
+              >
+                {loading ? (
+                  <div className={styles.loading}>Loading...</div>
+                ) : error ? (
+                  <div className={styles.error}>{error}</div>
+                ) : searchResults.length > 0 ? (
+                  <ul className={styles.suggestionsList}>
+                    {searchResults.map((result) => (
+                      <li key={result._id} className={styles.suggestionItem}>
+                        <Link href={`/product/${result._id}`} passHref>
+                          {result.productName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className={styles.noResults}>No results found</div>
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
 
           {/* Account and Cart Links */}
           <div className="px-2 flex items-center justify-center">
@@ -426,7 +498,7 @@ export default function Navigation() {
             </svg>
           </Link>
           <Link href={"/"}>DIVINE</Link>
-          <button>
+          <button onClick={handleOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -442,26 +514,25 @@ export default function Navigation() {
               />
             </svg>
           </button>
-          <Link href={"/cart"}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-              />
-            </svg>
-          </Link>
+          <div className="group -m-2 flex items-center p-2">
+            <ShoppingBagIcon
+              onClick={openCart}
+              className="h-6 w-6 flex-shrink-0 text-gray-800 group-hover:text-gray-500"
+              aria-hidden="true"
+            />
+            <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+              {item.length}
+            </span>
+            <span className="sr-only">items in cart, view bag</span>
+          </div>
         </div>
       </nav>
 
-      <div  className={`${styles.MobileMenuLink} ${mobileMenu?styles.openMenu:""}`}>
+      <div
+        className={`${styles.MobileMenuLink} ${
+          mobileMenu ? styles.openMenu : ""
+        }`}
+      >
         <button onClick={closeMobileMenu} className={styles.Close}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -483,10 +554,10 @@ export default function Navigation() {
         </Link>
         <ul>
           <li
-          
+            onClick={openMenu}
             className="flex items-center  justify-between w-full"
           >
-            <Link onClick={openMenu} href={""}>MENS</Link>
+            <Link href={""}>MENS</Link>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -503,53 +574,53 @@ export default function Navigation() {
             </svg>
           </li>
           <li className="flex items-center  justify-between w-full">
-            <Link href={""}>All</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </li>{" "}
+            <Link href={"/category/winter"}>Winter</Link>
+          </li>
           <li className="flex items-center  justify-between w-full">
-            <Link href={""}>Winter</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
+            <Link href={"/products"}>All</Link>
+          </li>
+
+          <li>
+            <Link href={"/category/tops"}>Tops</Link>
           </li>
           <li>
-            <Link href={""}>Tops</Link>
+            <Link href={"/category/bottoms"}>Bottoms</Link>
           </li>
           <li>
-            <Link href={""}>Bottoms</Link>
+            <Link href={"/products"}>Sale</Link>
           </li>
-          <li>
-            <Link href={""}>Sale</Link>
-          </li>
+          {!user ? (
+            <>
+              <li>
+                <Link href={"/registration"}>Sign Up</Link>
+              </li>
+              <li>
+                <Link href={"/login"}>Login</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link href={"/profile"}>{user ? user.displayName : null}</Link>
+              </li>
+              <li>
+                <Link href={"/profile"}>Orders</Link>
+              </li>
+              <li>
+                <button
+                  className="text-xl bg-black text-white px-4 py-2 rounded-md"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          )}
         </ul>
       </div>
-      <div className={`${styles.MobileMenuLink2} ${
-          menu1 ? styles.openMenu1 : ""
-        }`}>
+      <div
+        className={`${styles.MobileMenuLink2} ${menu1 ? styles.openMenu1 : ""}`}
+      >
         <button onClick={closeMenu} className={styles.Close}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -571,58 +642,16 @@ export default function Navigation() {
         </Link>
         <ul>
           <li className="flex items-center  justify-between w-full">
-            <Link href={""}>T shirts</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
+            <Link href={"/category/tops"}>T shirts</Link>
           </li>
           <li className="flex items-center  justify-between w-full">
-            <Link href={""}>Polo</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </li>{" "}
+            <Link href={"/category/tops"}>Polo</Link>
+          </li>
           <li className="flex items-center  justify-between w-full">
-            <Link href={""}>Winter</Link>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
+            <Link href={"/category/winter"}>Winter</Link>
           </li>
           <li>
-            <Link href={""}>Joggers</Link>
+            <Link href={"/category/bottoms"}>Joggers</Link>
           </li>
           <li>
             <Link href={""}>Sneakers</Link>
