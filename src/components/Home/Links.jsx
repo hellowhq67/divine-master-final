@@ -1,6 +1,8 @@
 import { Link } from '@mui/material'
 import React from 'react'
-const data =[
+
+export default function Links() {
+    const data =[
         {
             name:" T-Shirts",
             link:"/category/tops"
@@ -33,10 +35,8 @@ const data =[
         },
         
     ]
-export default function Links() {
-    
   return (
-    <div className='flex w-screen flex-col lg:h-80 items-start  my-20 px-2 lg:px-0 '>
+    <div className='flex w-screen flex-col lg:h-80 items-start px-4 my-20 sm:px-4 lg:px-8 '>
       <h1 className='text-3xl my-10 font-semibold font-sans ' >POPULAR RIGHT NOW</h1>
 
       <div className="flex  w-screen flex-wrap gap-20 sm:h-full lg:h-screen">
