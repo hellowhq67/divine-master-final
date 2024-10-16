@@ -3,6 +3,7 @@ import "./globals.css";
 import 'react-toastify/dist/ReactToastify.css';
 import Prvider from '@/redux/Prvider'
 import { AuthContextProvider } from "./context/AuthContext";
+import { GoogleAnalytics } from '@next/third-parties/google'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
        <AuthContextProvider>{children}</AuthContextProvider>
        </Prvider>
       </body>
+     <GoogleAnalytics gaId="G-22PRTGLZST" />
     </html>
   );
 }
