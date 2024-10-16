@@ -26,7 +26,7 @@ function Poster() {
       },
   ]
   return (
-    <div className=' flex w-screen gap-2 items-center justify-center px-2  h-screen overflow-hidden'>
+    <div className=' flex w-screen gap-2 items-center justify-center px-2  h-full overflow-hidden flex-wrap'>
       {data.map((x)=>{
         return(
           <Link href={x.link} className='relative'>
