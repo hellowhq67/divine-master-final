@@ -7,8 +7,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import Icon from "./taka.png";
 import styles from "./styles.module.css";
 import Image from "next/image";
+// Import required modules
 import { Pagination, Navigation } from "swiper/modules";
 
 export default function Featured() {
@@ -43,17 +45,16 @@ export default function Featured() {
   }
 
   return (
-    <div className="flex flex-col items-start justify-start w-screen h-full">
+    <div className="flex flex-col items-start justify-start w-screen h-full mt-6">
       <h2 className=" ml-6  mb-6 text-3xl font-sans font-semibold  text-gray-900 text-center">
         NEW ARRIVAL
+        <hr />
       </h2>
+      
       <Swiper
         slidesPerView={1}
         spaceBetween={10}
-        pagination={{
-        clickable:true,
-        }}
-        navigation={true}
+       
         breakpoints={{
           640: {
             slidesPerView: 2,
@@ -92,7 +93,9 @@ export default function Featured() {
                     <span>{product.price}</span>
                   ) : (
                     <span className=" flex items-center text-sm">
-                      <span className="font-sans text-sm px-1 text-black">BTD</span>
+                      <span className="font-sans text-sm px-1 text-black">
+                        BTD
+                      </span>
                       {product.smartPrice}
                       <span className="mx-1 text-sm line-through text-gray-600">
                         {product.price}
@@ -104,7 +107,6 @@ export default function Featured() {
             </div>
           </SwiperSlide>
         ))}
-        
       </Swiper>
     </div>
   );
