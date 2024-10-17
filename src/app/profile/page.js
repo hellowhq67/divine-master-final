@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Nav from "@/components/Navbar/Nav";
+import Navigation from "@/components/Navbar/Navigation";
 import Footer from "@/components/Footer/Footer";
 import Link from "next/link";
 import OrderCard from "@/components/order/OrderCard";
@@ -21,7 +21,7 @@ export default function page() {
   }, [user]);
   return (
     <>
-      <Nav />
+      <Navigation />
       <div className="flex items-start h-screen w-full ">
         <Sidebar/>
 
