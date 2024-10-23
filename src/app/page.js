@@ -7,9 +7,11 @@ import Footer from "@/components/Footer/Footer";
 import Banner2 from "@/components/Home/Banner2";
 import Banner3 from "@/components/Home/Banner3";
 import Banner4 from "@/components/Home/Banner4";
+
 import Fetured from "@/components/Fetured/Fetured";
 import Navigation from '@/components/Navbar/Navigation'
 import Links from '@/components/Home/Links'
+import Messenger from "../components/Chatbot/Messenger";
 export default function Home() {
 
 
@@ -28,7 +30,8 @@ export default function Home() {
       </div>
      
       <Footer />
-    
+      <Messenger/>
+   
     </>
   );
 }
