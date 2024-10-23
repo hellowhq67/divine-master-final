@@ -11,6 +11,7 @@ import Banner4 from "@/components/Home/Banner4";
 import Fetured from "@/components/Fetured/Fetured";
 import Navigation from '@/components/Navbar/Navigation'
 import Links from '@/components/Home/Links'
+import MessengerCustomerChat from 'react-messenger-customer-chat';
 export default function Home() {
 
 
@@ -29,6 +30,11 @@ export default function Home() {
       </div>
      
       <Footer />
+      <MessengerCustomerChat
+    pageId="61559415209737"
+    appId="3721280451471835"
+ 
+  />,
     </>
   );
 }
