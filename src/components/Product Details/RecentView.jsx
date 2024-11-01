@@ -16,7 +16,7 @@ function RecentView() {
 
       try {
         const productsResponse = await axios.get(
-          `http://localhost:3000/api/admin/products`
+          `/api/admin/products`
         );
 
         setProducts(productsResponse.data.recentViews);
