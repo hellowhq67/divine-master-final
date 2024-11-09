@@ -25,7 +25,7 @@ export default function ProductReview({ productID }) {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/admin/products/review"
+          "/api/admin/products/review"
         );
         const allReviews = response.data.review;
 
