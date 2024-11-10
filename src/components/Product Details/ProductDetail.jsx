@@ -1,44 +1,83 @@
 "use client";
-import React, { useState } from "react";
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+import "./style.css";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
-import { ToastContainer } from "react-toastify";
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
-
-import "./style.css";
+import { toast, ToastContainer } from "react-toastify";
+import Rating from "@mui/material/Rating";
+import Stack from "@mui/material/Stack";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { add } from "@/redux/Cartslice";
 import { addToFavorites, removeFromFavorites } from "@/redux/favoritesSlice";
 import { useDispatch, useSelector } from "react-redux";
-export default function ProductDetail({ product }) {
+import axios from "axios";
+export default function ProductDetail({ product, productID }) {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const favorites = useSelector((state) => state.favorites); // Access the favorites state
+  const isFavorite = favorites.some((item) => item._id === product._id);
+  const [reviews, setReviews] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get("/api/admin/products/review");
+        const allReviews = response.data.review;
+
+        // Filter reviews based on productId
+        const filteredReviews = allReviews.filter(
+          (review) => review.productId === productID
+        );
+        setReviews(filteredReviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [productID]);
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
   };
 
   const handleAddToCart = () => {
-    dispatch(add({ ...product, size: selectedSize }));
+    if (!selectedSize) {
+      toast.error("select your size first");
+    }
+    if (selectedSize) {
+      dispatch(add({ ...product, size: selectedSize }));
+    }
   };
-  const favorites = useSelector((state) => state.favorites); // Access the favorites state
-
-  const isFavorite = favorites.some((item) => item._id === product._id);
 
   const handleToggleFavorite = () => {
+    if (!product) return; // Prevent errors if product is undefined
     if (isFavorite) {
       dispatch(removeFromFavorites(product._id));
     } else {
       dispatch(addToFavorites(product));
     }
   };
+  const buyNow = () => {
+    handleAddToCart();
+    router.push("/checkout");
+  };
+
+  const average = reviews.length
+    ? (
+        reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+      ).toFixed(1)
+    : 0;
   return (
     <>
       <ToastContainer />
@@ -102,14 +141,15 @@ export default function ProductDetail({ product }) {
             <div className="data w-full lg:pr-8 pr-0 xl:justify-start justify-center flex items-center max-lg:pb-10 xl:my-2 lg:my-5 my-0">
               <div className="data w-full max-w-xl">
                 <p className="text-lg font-medium leading-8 text-black mb-4">
-               {'product'} &nbsp; /&nbsp; {product.subcetagory}&nbsp; /&nbsp; {product.department}
+                  {"product"} &nbsp; /&nbsp; {product.subcetagory}&nbsp; /&nbsp;{" "}
+                  {product.department}
                 </p>
                 <h2 className="font-manrope font-bold text-3xl leading-10 text-gray-900 mb-2 capitalize">
                   {product.productName}Basic
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center mb-6">
                   <div className="flex items-center">
-                    <h6 className="line-through font-manope font-semibold text-2xl leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
+                    <h6 className="line-through font-manrope font-semibold text-2xl leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
                       {product.price}
                     </h6>
                     <h6 className=" font-manrope font-semibold text-2xl leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
@@ -117,8 +157,28 @@ export default function ProductDetail({ product }) {
                       BTD
                     </h6>
                   </div>
-               
-     
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {/* Repeated SVG for rating stars */}
+
+                      {!average ? null : (
+                        <Stack>
+                          <Rating
+                            name="half-rating-read"
+                            defaultValue={average}
+                            readOnly
+                          />
+                        </Stack>
+                      )}
+                    </div>
+                    <p className="text-sm font-medium leading-none text-gray-500 dark:text-gray-400">
+                      {average}
+                    </p>
+                    <div className="text-sm font-medium leading-none text-gray-900 underline hover:no-underline dark:text-white">
+                      {`${reviews.length} Reviews`}
+                    </div>
+                  </div>
+                </div>
 
                 <ul className="grid gap-y-4 mb-8">
                   <li className="flex items-center gap-3">
@@ -142,7 +202,7 @@ export default function ProductDetail({ product }) {
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
-                  <svg
+                    <svg
                       width="26"
                       height="26"
                       viewBox="0 0 26 26"
@@ -162,7 +222,7 @@ export default function ProductDetail({ product }) {
                     </span>
                   </li>
                   <li class="flex items-center gap-3">
-                  <svg
+                    <svg
                       width="26"
                       height="26"
                       viewBox="0 0 26 26"
@@ -183,7 +243,7 @@ export default function ProductDetail({ product }) {
                   </li>
 
                   <li class="flex items-center gap-3">
-                  <svg
+                    <svg
                       width="26"
                       height="26"
                       viewBox="0 0 26 26"
@@ -203,7 +263,7 @@ export default function ProductDetail({ product }) {
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
-                  <svg
+                    <svg
                       width="26"
                       height="26"
                       viewBox="0 0 26 26"
@@ -245,10 +305,8 @@ export default function ProductDetail({ product }) {
                 </div>
 
                 <div className=" py-8">
-                
                   <button
                     onClick={handleAddToCart}
-                    disabled={!selectedSize}
                     className="group py-4 px-5 rounded-full bg-black text-white font-semibold text-lg w-full flex items-center justify-center gap-2 transition-all duration-500 hover:bg-gray-800"
                   >
                     <svg
@@ -296,70 +354,85 @@ export default function ProductDetail({ product }) {
                       />
                     </svg>
                   </button>
-                  <button className="text-center w-full px-5 py-4 rounded-[100px] bg-black flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-gray-900 hover:shadow-gray-400">
+                  <button
+                    onClick={buyNow}
+                    className="text-center w-full px-5 py-4 rounded-[100px] bg-black flex items-center justify-center font-semibold text-lg text-white shadow-sm transition-all duration-500 hover:bg-gray-900 hover:shadow-gray-400"
+                  >
                     Buy Now
                   </button>
                 </div>
                 <div className="my-4">
+                  <Accordion defaultExpanded>
+                    <AccordionSummary
+                      expandIcon={
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="size-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      }
+                      aria-controls="panel1-content"
+                      id="panel1-header"
+                    >
+                      <Typography>Description</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>{product.description}</Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion>
+                    <AccordionSummary
+                      expandIcon={
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="size-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                          />
+                        </svg>
+                      }
+                      aria-controls="panel2-content"
+                      id="panel2-header"
+                    >
+                      <Typography>Trams And Condition</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>
+                        {`
+                      
 
-                <Accordion defaultExpanded>
-                  <AccordionSummary
-                    expandIcon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-6"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                        />
-                      </svg>
-                    }
-                    aria-controls="panel1-content"
-                    id="panel1-header"
-                  >
-                    <Typography>Description</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>{product.description}</Typography>
-                  </AccordionDetails>
-                </Accordion>
-                <Accordion>
-                  <AccordionSummary
-                    expandIcon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-6"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="m19.5 8.25-7.5 7.5-7.5-7.5"
-                        />
-                      </svg>
-                    }
-                    aria-controls="panel2-content"
-                    id="panel2-header"
-                  >
-                    <Typography>Trams And Condition</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Suspendisse malesuada lacus ex, sit amet blandit leo
-                      lobortis eget.
-                    </Typography>
-                  </AccordionDetails>
-                </Accordion>
+Terms & Conditions
+Delivery: We deliver all over Bangladesh with an estimated delivery time of 3 to 7 business days. International shipping is also available with the same delivery timeframe.
+
+Returns:
+
+If you receive the wrong product, we will arrange a free return and replacement.
+If you wish to return a product for any other reason (e.g., change of mind), you will be responsible for the return shipping costs.
+Refund Policy: To be eligible for a return, products must be in their original condition, unworn, and with all tags intact.
+
+Order Issues: Please contact our support team within 48 hours of receiving your order if you encounter any issues.
+
+By purchasing, you agree to these terms. For more details, visit
+                    `}
+                      </Typography>
+                    </AccordionDetails>
+                  </Accordion>
                 </div>
               </div>
             </div>
