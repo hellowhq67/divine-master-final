@@ -18,7 +18,7 @@ export default async function Page({ params: { _id } }) {
   return (
     <>
         <Navigation/>
-      <ProductDetail product={product} />
+      <ProductDetail product={product}  productID={_id}/>
       <RelatedProducts category={category}/>
       <RecentView />
       <ProductReview productID={_id}/>
