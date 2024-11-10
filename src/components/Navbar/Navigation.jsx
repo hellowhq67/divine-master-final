@@ -303,7 +303,7 @@ export default function Navigation() {
             onMouseLeave={handleMouseLeave}
             className={styles.menuItem}
           >
-            <Link href="/winter" className={styles.navLink}>
+            <Link href="/category/winter" className={styles.navLink}>
               WINTER
             </Link>
             {activeMenu === "WINTER" && (
