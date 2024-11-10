@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Prvider from '@/redux/Prvider'
 import { AuthContextProvider } from "./context/AuthContext";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleTagManager } from '@next/third-parties/google'
 const inter = Inter({ subsets: ["latin"] });
 
 
@@ -26,12 +27,7 @@ export default function RootLayout({ children }) {
         <meta name="author" content={metadata.author} />
         <meta name="robots" content={metadata.robots} />
         <title>{metadata.title}</title>
-        {/* Hreflang Tags for Geo-targeting */}
-        <link rel="alternate" href="https://divinemenswear.com/" hreflang="en" />
-        <link rel="alternate" href="https://divinemenswear.com/bd" hreflang="bn" />
-        <link rel="alternate" href="https://divinemenswear.com/fr" hreflang="fr" />
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" />
+       
       </head>
       <body className={inter.className}>
        <Prvider>
@@ -40,6 +36,7 @@ export default function RootLayout({ children }) {
        </Prvider>
       </body>
      <GoogleAnalytics gaId="G-22PRTGLZST" />
+     <GoogleTagManager gtmId="GTM-M8MCP2K6" />
     </html>
   );
 }
