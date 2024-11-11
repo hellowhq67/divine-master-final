@@ -13,6 +13,9 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import { toast, ToastContainer } from "react-toastify";
 import Rating from "@mui/material/Rating";
+import { sendGTMEvent } from '@next/third-parties/google'
+ 
+
 import Stack from "@mui/material/Stack";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { add } from "@/redux/Cartslice";
@@ -57,7 +60,10 @@ export default function ProductDetail({ product, productID }) {
     }
     if (selectedSize) {
       dispatch(add({ ...product, size: selectedSize }));
-    }
+      
+    sendGTMEvent({ event: 'add in cart', value:...product})
+}
+      >
   };
 
   const handleToggleFavorite = () => {
