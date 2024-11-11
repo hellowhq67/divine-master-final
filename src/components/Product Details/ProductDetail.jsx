@@ -63,7 +63,7 @@ export default function ProductDetail({ product, productID }) {
       
     sendGTMEvent({ event: 'add in cart', value:product})
 }
-      >
+      
   };
 
   const handleToggleFavorite = () => {
