@@ -61,7 +61,7 @@ export default function ProductDetail({ product, productID }) {
     if (selectedSize) {
       dispatch(add({ ...product, size: selectedSize }));
       
-    sendGTMEvent({ event: 'add in cart', value:...product})
+    sendGTMEvent({ event: 'add in cart', value:product})
 }
       >
   };
