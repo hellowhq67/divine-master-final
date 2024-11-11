@@ -54,17 +54,27 @@ export default function ProductDetail({ product, productID }) {
     setSelectedSize(size);
   };
 
-  const handleAddToCart = () => {
-    if (!selectedSize) {
-      toast.error("select your size first");
-    }
-    if (selectedSize) {
-      dispatch(add({ ...product, size: selectedSize }));
-      
-    sendGTMEvent({ event: 'add in cart', value:product})
-}
-      
-  };
+const handleAddToCart = () => {
+  if (!selectedSize) {
+    toast.error("Please select your size first");
+    return; // Stop execution if size is not selected
+  }
+
+  // Add the product with the selected size to the cart
+  dispatch(add({ ...product, size: selectedSize }));
+  toast.success("Product added to cart");
+
+  // Send the event to Google Tag Manager and Conversion API
+  sendGTMEvent({
+    event: "add_to_cart",
+    value: {
+      productID: product._id,
+      productName: product.productName,
+      price: product.price,
+      size: selectedSize,
+    },
+  });
+};
 
   const handleToggleFavorite = () => {
     if (!product) return; // Prevent errors if product is undefined
