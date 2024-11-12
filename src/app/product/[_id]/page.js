@@ -19,29 +19,9 @@ export default async function Page({ params: { _id } }) {
   const category = product ? product.category : null;
 
   // Step 2: Prepare the data for sending to GTM, GA4, and Facebook Pixel
-  const productData = {
-    event: "view_content",
-    ecommerce: {
-      items: [
-        {
-          item_name: product?.productName,
-          item_id: product?._id,
-          price: product?.price,
-          category: product?.category,
-          brand: "Divine MensWear",
-        },
-      ],
-    },
-    value: product?.price,
-    currency: "USD",
-    content_ids: product?._id,
-    content_type: "product",
-  };
+  
 
-  // Step 3: Send the event to GTM for forwarding to GA4 and Facebook CAPI
-  if (product) {
-    sendGTMEvent(productData);
-  }
+  // Step 3: Send the event to GTM for forwarding to GA4 and Facebo
 
   return (
     <>
