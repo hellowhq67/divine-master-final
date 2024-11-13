@@ -72,7 +72,7 @@ const handleAddToCart = () => {
           currency: "BDT", // Adjust according to your store's currency
           items: [
             {
-              item_id: product.productID,
+              item_id: product._id,
               item_name: product.productName,
               price: product.price,
               quantity: 1,
