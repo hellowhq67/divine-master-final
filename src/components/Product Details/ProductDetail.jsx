@@ -64,25 +64,34 @@ const handleAddToCart = () => {
   dispatch(add({ ...product, size: selectedSize }));
   toast.success("Product added to cart");
 
+  // Prepare the product data
+  const items = [
+    {
+      productID: product._id,
+      productName: product.productName,
+      price: product.price,
+      size: selectedSize,
+      quantity: 1,
+    },
+  ];
+
   // Send the event to Google Tag Manager and Conversion API
   sendGTMEvent({
     event: "add_to_cart",
     value: {
       ecommerce: {
-          currency: "BDT", // Adjust according to your store's currency
-          items: items.map(item => ({
-            item_id: item.productID,
-            item_name: item.productName,
-            price: item.price,
-            quantity: item.quantity || 1,
-            item_variant: item.size,
-          })),
-        },
-      });
-        },
+        currency: "BDT", // Adjust according to your store's currency
+        items: items.map(item => ({
+          item_id: item.productID,
+          item_name: item.productName,
+          price: item.price,
+          quantity: item.quantity,
+          item_variant: item.size,
+        })),
+      },
     },
   });
-};
+}
 
   const handleToggleFavorite = () => {
     if (!product) return; // Prevent errors if product is undefined
