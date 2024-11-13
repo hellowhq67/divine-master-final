@@ -70,15 +70,15 @@ const handleAddToCart = () => {
     value: {
       ecommerce: {
           currency: "BDT", // Adjust according to your store's currency
-          items: [
-            {
-              item_id: product._id,
-              item_name: product.productName,
-              price: product.price,
-              quantity: 1,
-              item_variant: product.size,
-            },
-          ],
+          items: items.map(item => ({
+            item_id: item.productID,
+            item_name: item.productName,
+            price: item.price,
+            quantity: item.quantity || 1,
+            item_variant: item.size,
+          })),
+        },
+      });
         },
     },
   });
