@@ -68,10 +68,18 @@ const handleAddToCart = () => {
   sendGTMEvent({
     event: "add_to_cart",
     value: {
-      productID: product._id,
-      productName: product.productName,
-      price: product.price,
-      size: selectedSize,
+      ecommerce: {
+          currency: "BDT", // Adjust according to your store's currency
+          items: [
+            {
+              item_id: product.productID,
+              item_name: product.productName,
+              price: product.price,
+              quantity: 1,
+              item_variant: product.size,
+            },
+          ],
+        },
     },
   });
 };
