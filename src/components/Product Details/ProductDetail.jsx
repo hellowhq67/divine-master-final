@@ -85,8 +85,8 @@ const handleAddToCart = () => {
 
   // Send the event to Google Tag Manager and Conversion API
   sendGTMEvent({
-    event: "add_to_cart",
-    value: {
+    event: "add_to_cart", 
+   value:{
       ecommerce: {
         currency: "BDT", // Adjust according to your store's currency
         items: items.map(item => ({
@@ -103,12 +103,7 @@ const handleAddToCart = () => {
   // Facebook Pixel tracking for 'AddToCart' event
   if (typeof window !== "undefined" && window.fbq) {
     window.fbq('track', 'AddToCart', {
-      contents: [
-        { 
-          id: product._id, 
-          quantity: 1,
-        }
-      ],
+      content_ids:product._id,
       content_type: 'product',
       value: product.price,
       currency: 'BDT', // Adjust currency as needed
