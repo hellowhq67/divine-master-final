@@ -30,23 +30,40 @@ export default function ProductDetail({ product, productID }) {
   const [reviews, setReviews] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await axios.get("/api/admin/products/review");
-        const allReviews = response.data.review;
+useEffect(() => {
+  // Fetch reviews for the product
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get("/api/admin/products/review");
+      const allReviews = response.data.review;
+      
+      // Filter reviews based on productID
+      const filteredReviews = allReviews.filter(
+        (review) => review.productId === productID
+      );
+      setReviews(filteredReviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
-        // Filter reviews based on productId
-        const filteredReviews = allReviews.filter(
-          (review) => review.productId === productID
-        );
-        setReviews(filteredReviews);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  fetchReviews();
+
+  // Send Facebook Pixel ViewContent event
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq('track', 'ViewContent', {
+      contents: [
+        {
+          id: product._id,
+          quantity: 1,
+        }
+      ],
+      content_type: 'product',
+      value: product.price,
+      currency: 'BDT' 
+    });
+  }
+}, [productID, product]);
 
     fetchReviews();
   }, [productID]);
