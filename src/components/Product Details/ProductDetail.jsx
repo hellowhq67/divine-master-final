@@ -57,14 +57,12 @@ export default function ProductDetail({ product, productID }) {
 const handleAddToCart = () => {
   if (!selectedSize) {
     toast.error("Please select your size first");
-    return; // Stop execution if size is not selected
+    return; 
   }
 
-  // Add the product with the selected size to the cart
-  dispatch(add({ ...product, size: selectedSize }));
-  toast.success("Product added to cart");
 
-  // Prepare the product data
+  dispatch(add({ ...product, size: selectedSize }));
+
   const items = [
     {
       productID: product._id,
@@ -91,7 +89,22 @@ const handleAddToCart = () => {
       },
     },
   });
-}
+
+  // Facebook Pixel tracking for 'AddToCart' event
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq('track', 'AddToCart', {
+      contents: [
+        { 
+          id: product._id, 
+          quantity: 1,
+        }
+      ],
+      content_type: 'product',
+      value: product.price,
+      currency: 'BDT', // Adjust currency as needed
+    });
+  }
+};
 
   const handleToggleFavorite = () => {
     if (!product) return; // Prevent errors if product is undefined
