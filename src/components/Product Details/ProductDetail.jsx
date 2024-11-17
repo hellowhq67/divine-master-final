@@ -31,13 +31,10 @@ export default function ProductDetail({ product, productID }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
 useEffect(() => {
-  // Fetch reviews for the product
   const fetchReviews = async () => {
     try {
       const response = await axios.get("/api/admin/products/review");
       const allReviews = response.data.review;
-      
-      // Filter reviews based on productID
       const filteredReviews = allReviews.filter(
         (review) => review.productId === productID
       );
@@ -49,24 +46,20 @@ useEffect(() => {
 
   fetchReviews();
 
-  // Send Facebook Pixel ViewContent event
+  // Facebook Pixel ViewContent Event
   if (typeof window !== "undefined" && window.fbq) {
     window.fbq('track', 'ViewContent', {
-      contents: [
-        {
-          id: product._id,
-          quantity: 1,
-        }
-      ],
+      contents: [{ id: product._id, quantity: 1 }],
       content_type: 'product',
       value: product.price,
-      currency: 'BDT' 
+      currency: 'BDT',
     });
   }
+
+  // Google Tag Manager Data Layer Event
+
 }, [productID, product]);
 
-    fetchReviews();
-  }, [productID]);
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
   };
