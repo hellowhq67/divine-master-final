@@ -17,7 +17,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
 
-  const FACEBOOK_PIXEL_ID = '914051926996452';
+  
 
   return (
     <html lang="en">
@@ -30,24 +30,7 @@ export default function RootLayout({ children }) {
         <meta name="author" content={metadata.author} />
         <meta name="robots" content={metadata.robots} />
         <title>{metadata.title}</title>
-        <Script
-          id="facebook-pixel"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              !function(f,b,e,v,n,t,s)
-              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-              n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t,s)}(window,document,'script',
-              'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${FACEBOOK_PIXEL_ID}');
-              fbq('track', 'PageView');
-            `,
-          }}
-        />
+        
       </head>
       <GoogleAnalytics gaId="G-22PRTGLZST" />
       <GoogleTagManager gtmId="GTM-M8MCP2K6" />
