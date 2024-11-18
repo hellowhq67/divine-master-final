@@ -46,15 +46,7 @@ useEffect(() => {
 
   fetchReviews();
 
-  // Facebook Pixel ViewContent Event
-  if (typeof window !== "undefined" && window.fbq) {
-    window.fbq('track', 'ViewContent', {
-      contents: [{ id: product._id, quantity: 1 }],
-      content_type: 'product',
-      value: product.price,
-      currency: 'BDT',
-    });
-  }
+  
 
   // Google Tag Manager Data Layer Event
 
