@@ -30,41 +30,56 @@ export default function ProductDetail({ product, productID }) {
   const [reviews, setReviews] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-useEffect(() => {
-  const fetchReviews = async () => {
-    try {
-      const response = await axios.get("/api/admin/products/review");
-      const allReviews = response.data.review;
-      const filteredReviews = allReviews.filter(
-        (review) => review.productId === productID
-      );
-      setReviews(filteredReviews);
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  };
 
-  fetchReviews();
-
-  sendGTMEvent({
-    event: "view_item", 
-   value:{
-      ecommerce: {
-        currency: "BDT", // Adjust according to your store's currency
-        items: items.map(item => ({
-          item_id: item.productID,
-          item_name: item.productName,
-          price: item.price,
-          quantity: item.quantity,
-          item_variant: item.size,
-        })),
-      },
-    },
-  });
 
   // Google Tag Manager Data Layer Event
+useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get("/api/admin/products/review");
+        const allReviews = response.data.review;
+        const filteredReviews = allReviews.filter(
+          (review) => review.productId === productID
+        );
+        setReviews(filteredReviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
 
-}, [productID, product]);
+    fetchReviews();
+
+    // Define items array for GTM event
+    const items = [
+      {
+        productID: product._id,
+        productName: product.productName,
+        price: product.price,
+        size: selectedSize || "Not selected",
+        quantity: 1,
+      },
+    ];
+
+    // Send the GTM event for 'view_item'
+    sendGTMEvent({
+      event: "view_item",
+      value: {
+        ecommerce: {
+          currency: "BDT",
+          items: items.map((item) => ({
+            item_id: item.productID,
+            item_name: item.productName,
+            price: item.price,
+            quantity: item.quantity,
+            item_variant: item.size,
+          })),
+        },
+      },
+    });
+
+  }, [productID, product, selectedSize]);
+
+
 
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
