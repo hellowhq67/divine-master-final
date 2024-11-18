@@ -99,6 +99,7 @@ const handleAddToCart = () => {
       },
     },
   });
+}
 
   // Facebook Pixel tracking for 'AddToCart' event
 
