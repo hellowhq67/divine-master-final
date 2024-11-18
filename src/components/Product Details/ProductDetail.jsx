@@ -101,15 +101,6 @@ const handleAddToCart = () => {
   });
 
   // Facebook Pixel tracking for 'AddToCart' event
-  if (typeof window !== "undefined" && window.fbq) {
-    window.fbq('track', 'AddToCart', {
-      content_ids:product._id,
-      content_type: 'product',
-      value: product.price,
-      currency: 'BDT', // Adjust currency as needed
-    });
-  }
-};
 
   const handleToggleFavorite = () => {
     if (!product) return; // Prevent errors if product is undefined
