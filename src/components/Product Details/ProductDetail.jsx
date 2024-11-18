@@ -46,7 +46,21 @@ useEffect(() => {
 
   fetchReviews();
 
-  
+  sendGTMEvent({
+    event: "view_item", 
+   value:{
+      ecommerce: {
+        currency: "BDT", // Adjust according to your store's currency
+        items: items.map(item => ({
+          item_id: item.productID,
+          item_name: item.productName,
+          price: item.price,
+          quantity: item.quantity,
+          item_variant: item.size,
+        })),
+      },
+    },
+  });
 
   // Google Tag Manager Data Layer Event
 
