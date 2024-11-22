@@ -14,7 +14,6 @@ export default function Favorite() {
 
   return (
     <div className="flex items-start">
-      <Sidebar />
 
       <div className="p-6">
         <h2 className="text-2xl font-semibold mb-4">Your Favorites</h2>
