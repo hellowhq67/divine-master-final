@@ -17,8 +17,11 @@ import axios from "axios";
 import { UploadDropzone } from "@uploadthing/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-
+import { useDispatch, useSelector } from "react-redux";
 const Profile = () => {
+  const dispatch = useDispatch();
+  const favorites = useSelector((state) => state.favorites); // Access the favorites state
+  const cartitems = useSelector((state) => state.cart.items);
   const { user, logOut } = UseAuth();
   const userID = user ? user.uid : null;
   const [loading, setLoading] = useState(true);
@@ -55,7 +58,7 @@ const Profile = () => {
       try {
         const response = await fetch(`/api/user/all-users/${userID}`);
         const data = await response.json();
-   
+
         setUserProfile(data.user);
       } catch (error) {
         console.error("Error fetching addresses:", error);
@@ -75,7 +78,6 @@ const Profile = () => {
         // Filter orders based on userID
         const userOrders = ordersData.filter((order) => order.uid === userID);
 
- 
         setOrders(userOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -287,6 +289,7 @@ const Profile = () => {
             {greeting}, welcome to Divine - where innovation meets luxury.
             Explore our exclusive collection and redefine your style.
           </div>
+
           <div className=" border-2 bg-slate-50 rounded-lg shadow-lg overflow-scroll  p-4 text-xl  flex flex-col">
             <div className="flex items-center">
               {!userProfile ? (
@@ -322,6 +325,94 @@ const Profile = () => {
                 </label>
               </div>
             </div>
+
+            <div class="flex items-center justify-start gap-10 py-4">
+              <div>
+                <div className="flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"
+                    />
+                  </svg>
+
+                  <span class="flex items-center text-xl  text-gray-900 dark:text-white">
+                    {orders ? orders.length : "no orders"}
+                  </span>
+                </div>
+                <Link
+                  href={"#"}
+                  class="mb-2 text-gray-500 dark:text-gray-400 underline"
+                >
+                  Orders made
+                </Link>
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                    />
+                  </svg>
+
+                  <span class="flex items-center text-xl  text-gray-900 dark:text-white">
+                   {cartitems.length}
+                  </span>
+                </div>
+                <Link
+                  href={"/cart"}
+                  class="mb-2 text-gray-500 dark:text-gray-400 underline"
+                >
+                  Added To Cart
+                </Link>
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                    />
+                  </svg>
+
+                  <span class="flex items-center text-xl  text-gray-900 dark:text-white">
+                   {favorites.length}
+                  </span>
+                </div>
+                <Link
+                  href={"/favorite"}
+                  class="mb-2 text-gray-500 dark:text-gray-400 underline"
+                >
+                  Wishlist Products
+                </Link>
+              </div>
+            </div>
+
             <hr />
 
             <div>
