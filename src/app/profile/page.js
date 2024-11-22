@@ -23,8 +23,7 @@ export default function page() {
     <>
       <Navigation />
       <div className="flex items-start h-screen w-full ">
-        <Sidebar/>
-
+   
         <div className="bg-slate-100  w-full h-screen overflow-scroll p-4 flex flex-col gap-10">
           <nav class="flex" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
