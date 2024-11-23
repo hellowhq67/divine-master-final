@@ -192,8 +192,9 @@ const COD = async () => {
           item_variant: item.variant || "default",
           price: item.price || 0,
           quantity: item.quantity || 1,
-      }
+      
         })),
+      }
       };
 
       // Send purchase event to GTM
