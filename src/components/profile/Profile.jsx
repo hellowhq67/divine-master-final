@@ -69,24 +69,30 @@ const Profile = () => {
 
     fetchAddresses();
   }, [userID]);
+   // Fetch orders for the user
   useEffect(() => {
-    const fetchOrder = async () => {
+    const fetchOrders = async () => {
+      if (!userID) return; // Don't fetch orders if the user is not authenticated
+
       try {
-        const response = await axios.get(`/api/user/orders/all`);
+        const response = await axios.get(`/api/user/orders?userID=${userID}`);
         const ordersData = response.data.orders;
 
-        // Filter orders based on userID
-        const userOrders = ordersData.filter((order) => order.uid === userID);
+        // Check if any orders are found
+        if (ordersData.length === 0) {
+          toast.info("You have no orders yet.");
+        }
 
-        setOrders(userOrders);
+        setOrders(ordersData);
       } catch (error) {
         console.error("Error fetching orders:", error);
+        toast.error("Failed to fetch orders.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrder();
+    fetchOrders();
   }, [userID]);
   const handleSubmit = async () => {
     try {
