@@ -8,58 +8,88 @@ export async function GET(req) {
     await connectMongoDB();
 
     // Get query parameters for pagination
-    const page = parseInt(req.headers.get("page") || "1", 10); // Extract page from headers
-    const limit = parseInt(req.headers.get("limit") || "10", 10); // Extract limit from headers
+    const page = parseInt(req.headers.get("page") || "1", 10); // Default to page 1
+    const limit = parseInt(req.headers.get("limit") || "10", 10); // Default to limit 10
+    if (page < 1 || limit < 1) throw new Error("Invalid pagination parameters.");
 
     // Calculate the starting index
-    const startIndex = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-    // Retrieve orders with pagination
+    // Retrieve paginated orders
     const orders = await Orders.find({})
-      .skip(startIndex)
+      .skip(skip)
       .limit(limit)
       .exec();
 
     // Get total count of orders
     const totalOrders = await Orders.countDocuments();
 
-    // Calculate additional values
-    const allOrders = await Orders.find({});
-    const totalSales = allOrders.reduce((acc, order) => acc + order.total_amount, 0);
-    const totalProfit = allOrders.reduce(
-      (acc, order) =>
-        acc +
-        order.products.reduce(
-          (prodAcc, prod) =>
-            prodAcc + (!prod.smartPrice ? prod.price : prod.smartPrice - prod.costing) * prod.quantity,
-          0
-        ),
-      0
-    );
+    // Use aggregation for calculating total sales and profits
+    const aggregationResults = await Orders.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$total_amount" },
+          totalProfit: {
+            $sum: {
+              $sum: {
+                $map: {
+                  input: "$products",
+                  as: "product",
+                  in: {
+                    $multiply: [
+                      {
+                        $cond: [
+                          { $ifNull: ["$$product.smartPrice", false] },
+                          { $subtract: ["$$product.smartPrice", "$$product.costing"] },
+                          "$$product.price",
+                        ],
+                      },
+                      "$$product.quantity",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
 
+    const { totalSales = 0, totalProfit = 0 } = aggregationResults[0] || {};
+
+    // Calculate last week's sales
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const lastWeekSales = allOrders
-      .filter(order => new Date(order.createdAt) >= oneWeekAgo)
-      .reduce((acc, order) => acc + order.total_amount, 0);
 
+    const lastWeekSales = await Orders.aggregate([
+      { $match: { createdAt: { $gte: oneWeekAgo } } },
+      { $group: { _id: null, lastWeekSales: { $sum: "$total_amount" } } },
+    ]);
+
+    const lastWeekSalesTotal = lastWeekSales[0]?.lastWeekSales || 0;
+
+    // Calculate this month's sales
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const thisMonthSales = allOrders
-      .filter(order => new Date(order.createdAt) >= startOfMonth)
-      .reduce((acc, order) => acc + order.total_amount, 0);
 
-    // Return a success response with the retrieved orders, pagination info, and additional values
+    const thisMonthSales = await Orders.aggregate([
+      { $match: { createdAt: { $gte: startOfMonth } } },
+      { $group: { _id: null, thisMonthSales: { $sum: "$total_amount" } } },
+    ]);
+
+    const thisMonthSalesTotal = thisMonthSales[0]?.thisMonthSales || 0;
+
+    // Return a success response with the retrieved orders and additional values
     return NextResponse.json(
       {
         orders,
-        allOrders,
         currentPage: page,
         totalPages: Math.ceil(totalOrders / limit),
         totalOrders,
         totalSales,
         totalProfit,
-        lastWeekSales,
-        thisMonthSales,
+        lastWeekSales: lastWeekSalesTotal,
+        thisMonthSales: thisMonthSalesTotal,
       },
       { status: 200 }
     );
@@ -72,9 +102,6 @@ export async function GET(req) {
     );
   }
 }
-
- // Import crypto
-
 export async function POST(req) {
   try {
     // Connect to MongoDB
