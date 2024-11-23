@@ -75,7 +75,7 @@ const Profile = () => {
       if (!userID) return; // Don't fetch orders if the user is not authenticated
 
       try {
-        const response = await axios.get(`/api/user/orders?userID=${userID}`);
+        const response = await axios.get(`/api/user/orders/all?userID=${userID}`);
         const ordersData = response.data.orders;
 
         // Check if any orders are found
