@@ -4,7 +4,7 @@ import SubmitButton from "./SubmitButton";
 import { Modal } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { jsPDF } from "jspdf"; // For generating the PDF invoice
-
+import { sendGTMEvent } from '@next/third-parties/google';
 import {
   remove,
   incrementQuantity,
@@ -108,9 +108,8 @@ const Checkout = () => {
     }
   };
  
-import { sendGTMEvent } from '@next/third-parties/google';
-import { toast } from "react-toastify";
-import { useRouter } from "next/router";
+
+
 
 const COD = async () => {
   setLoader(true);
