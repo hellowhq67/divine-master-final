@@ -52,6 +52,7 @@ export async function GET(req) {
     return NextResponse.json(
       {
         orders,
+        allOrders,
         currentPage: page,
         totalPages: Math.ceil(totalOrders / limit),
         totalOrders,
