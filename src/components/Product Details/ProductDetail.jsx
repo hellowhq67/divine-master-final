@@ -50,32 +50,7 @@ useEffect(() => {
     fetchReviews();
 
     // Define items array for GTM event
-    const items = [
-      {
-        productID: product._id,
-        productName: product.productName,
-        price: product.price,
-        size: selectedSize || "Not selected",
-        quantity: 1,
-      },
-    ];
-
-    // Send the GTM event for 'view_item'
-    sendGTMEvent({
-      event: "view_item",
-      value: {
-        ecommerce: {
-          currency: "BDT",
-          items: items.map((item) => ({
-            item_id: item.productID,
-            item_name: item.productName,
-            price: item.price,
-            quantity: item.quantity,
-            item_variant: item.size,
-          })),
-        },
-      },
-    });
+    
 
   }, [productID, product, selectedSize]);
 
