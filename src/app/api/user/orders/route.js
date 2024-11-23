@@ -7,79 +7,65 @@ export async function GET(req) {
     // Connect to the MongoDB database
     await connectMongoDB();
 
-    // Get query parameters for pagination
-    const page = parseInt(req.headers.get("page") || "1", 10); // Default to page 1
-    const limit = parseInt(req.headers.get("limit") || "10", 10); // Default to limit 10
-    if (page < 1 || limit < 1) throw new Error("Invalid pagination parameters.");
+    // Extract query parameters for pagination
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-    // Calculate the starting index
-    const skip = (page - 1) * limit;
+    if (isNaN(page) || isNaN(limit) || page <= 0 || limit <= 0) {
+      return NextResponse.json(
+        { message: "Invalid page or limit parameters" },
+        { status: 400 }
+      );
+    }
 
-    // Retrieve paginated orders
+    const startIndex = (page - 1) * limit;
+
+    // Fetch orders for the current page
     const orders = await Orders.find({})
-      .skip(skip)
+      .skip(startIndex)
       .limit(limit)
       .exec();
 
     // Get total count of orders
     const totalOrders = await Orders.countDocuments();
 
-    // Use aggregation for calculating total sales and profits
-    const aggregationResults = await Orders.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalSales: { $sum: "$total_amount" },
-          totalProfit: {
-            $sum: {
-              $sum: {
-                $map: {
-                  input: "$products",
-                  as: "product",
-                  in: {
-                    $multiply: [
-                      {
-                        $cond: [
-                          { $ifNull: ["$$product.smartPrice", false] },
-                          { $subtract: ["$$product.smartPrice", "$$product.costing"] },
-                          "$$product.price",
-                        ],
-                      },
-                      "$$product.quantity",
-                    ],
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ]);
+    // Fetch all orders for calculations (optimize this if the dataset is large)
+    const allOrders = await Orders.find({}, "total_amount products createdAt");
 
-    const { totalSales = 0, totalProfit = 0 } = aggregationResults[0] || {};
+    // Calculate total sales
+    const totalSales = allOrders.reduce((acc, order) => acc + order.total_amount, 0);
+
+    // Calculate total profit
+    const totalProfit = allOrders.reduce(
+      (acc, order) =>
+        acc +
+        order.products.reduce(
+          (prodAcc, prod) =>
+            prodAcc +
+            (!prod.smartPrice
+              ? prod.price
+              : prod.smartPrice - prod.costing) *
+              prod.quantity,
+          0
+        ),
+      0
+    );
 
     // Calculate last week's sales
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    const lastWeekSales = await Orders.aggregate([
-      { $match: { createdAt: { $gte: oneWeekAgo } } },
-      { $group: { _id: null, lastWeekSales: { $sum: "$total_amount" } } },
-    ]);
-
-    const lastWeekSalesTotal = lastWeekSales[0]?.lastWeekSales || 0;
+    const lastWeekSales = allOrders
+      .filter(order => new Date(order.createdAt) >= oneWeekAgo)
+      .reduce((acc, order) => acc + order.total_amount, 0);
 
     // Calculate this month's sales
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const thisMonthSales = allOrders
+      .filter(order => new Date(order.createdAt) >= startOfMonth)
+      .reduce((acc, order) => acc + order.total_amount, 0);
 
-    const thisMonthSales = await Orders.aggregate([
-      { $match: { createdAt: { $gte: startOfMonth } } },
-      { $group: { _id: null, thisMonthSales: { $sum: "$total_amount" } } },
-    ]);
-
-    const thisMonthSalesTotal = thisMonthSales[0]?.thisMonthSales || 0;
-
-    // Return a success response with the retrieved orders and additional values
+    // Return response
     return NextResponse.json(
       {
         orders,
@@ -88,13 +74,12 @@ export async function GET(req) {
         totalOrders,
         totalSales,
         totalProfit,
-        lastWeekSales: lastWeekSalesTotal,
-        thisMonthSales: thisMonthSalesTotal,
+        lastWeekSales,
+        thisMonthSales,
       },
       { status: 200 }
     );
   } catch (error) {
-    // Log and return an error response in case of failure
     console.error("Error retrieving orders:", error);
     return NextResponse.json(
       { message: "Error retrieving orders", error: error.message },
@@ -102,6 +87,8 @@ export async function GET(req) {
     );
   }
 }
+ // Import crypto
+
 export async function POST(req) {
   try {
     // Connect to MongoDB
