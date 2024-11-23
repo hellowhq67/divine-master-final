@@ -173,7 +173,8 @@ const COD = async () => {
       // Prepare GTM purchase event data
       const purchaseData = {
         event: "purchase",
-        transaction_id: responseJson.orderId || "T_12345_1",
+      orderData:{
+          transaction_id: responseJson.orderId || "T_12345_1",
         value: total,
         tax: 4.90, // Example value, calculate dynamically if needed
         shipping: shipping, // Example value, calculate dynamically if needed
@@ -191,6 +192,7 @@ const COD = async () => {
           item_variant: item.variant || "default",
           price: item.price || 0,
           quantity: item.quantity || 1,
+      }
         })),
       };
 
