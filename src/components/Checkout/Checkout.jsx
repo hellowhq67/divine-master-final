@@ -174,12 +174,24 @@ const COD = async () => {
       const purchaseData = {
         event: "purchase",
       orderData:{
-          transaction_id: responseJson.orderId || "T_12345_1",
+        transaction_id: responseJson.orderId || "T_12345_1",
         value: total,
         tax: 4.90, // Example value, calculate dynamically if needed
         shipping: shipping, // Example value, calculate dynamically if needed
-        currency: "BTD",
-        coupon: "SUMMER_SALE", // Example value, update dynamically if applicable
+        currency: "BDT",
+        coupon: "WINTER_SALE",
+        uid: user.uid || "",
+        total_amount: total,
+        currency: "BDT",
+        cus_name: user.displayName || "",
+        cus_email: email,
+        cus_add1: address1,
+        cus_add2: address2,
+        cus_city: city,
+        cus_state: state,
+        cus_postcode: postalCode,
+        cus_country: "BD",
+        cus_phone: phoneNumber,
         items: cartitems.map((item, index) => ({
           item_id: item.id || `SKU_${index + 1}`,
           item_name: item.name || "Unknown Item",
@@ -197,7 +209,6 @@ const COD = async () => {
       }
       };
 
-      // Send purchase event to GTM
       sendGTMEvent(purchaseData);
 
       const emailData = {
