@@ -107,121 +107,138 @@ const Checkout = () => {
       setLoader(false);
     }
   };
-  const COD = async () => {
-    setLoader(true);
-  
-    // Show a pending toast notification
-    const pendingToastId = toast.info("Processing your order...", {
-      autoClose: false, // Keep the toast open until manually dismissed
+ 
+import { sendGTMEvent } from '@next/third-parties/google';
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+
+const COD = async () => {
+  setLoader(true);
+
+  // Show a pending toast notification
+  const pendingToastId = toast.info("Processing your order...", {
+    autoClose: false,
+  });
+
+  if (
+    !user ||
+    !email ||
+    !address1 ||
+    !city ||
+    !state ||
+    !postalCode ||
+    !phoneNumber ||
+    !total ||
+    !cartitems.length
+  ) {
+    toast.error("Please fill in all required fields.");
+    setLoader(false);
+    toast.dismiss(pendingToastId);
+    return;
+  }
+
+  try {
+    const token = await user.getIdToken();
+
+    const paymentData = {
+      uid: user.uid || "",
+      total_amount: total,
+      currency: "BTD",
+      cus_name: user.displayName || "",
+      cus_email: email,
+      cus_add1: address1,
+      cus_add2: address2,
+      cus_city: city,
+      cus_state: state,
+      cus_postcode: postalCode,
+      cus_country: "BD",
+      cus_phone: phoneNumber,
+      shipping_method: "courier",
+      products: cartitems,
+      paymentStatus: "COD",
+      OrderStatus: "pending",
+    };
+
+    let res = await fetch("/api/user/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(paymentData),
     });
-  
-    if (
-      !user ||
-      !email ||
-      !address1 ||
-      !city ||
-      !state ||
-      !postalCode ||
-      !phoneNumber ||
-      !total ||
-      !cartitems.length
-    ) {
-      toast.error("Please fill in all required fields.");
-      setLoader(false); // Stop loader on validation error
-      toast.dismiss(pendingToastId); // Dismiss pending toast on validation error
-      return;
-    }
-  
-    try {
-      const token = await user.getIdToken();
-  
-      const paymentData = {
-        uid: user ? user.uid : "",
-        total_amount: total,
+
+    let responseJson = await res.json();
+
+    if (responseJson) {
+      // Prepare GTM purchase event data
+      const purchaseData = {
+        event: "purchase",
+        transaction_id: responseJson.orderId || "T_12345_1",
+        value: total,
+        tax: 4.90, // Example value, calculate dynamically if needed
+        shipping: shipping, // Example value, calculate dynamically if needed
         currency: "BTD",
-        cus_name: user ? user.displayName : "",
-        cus_email: email,
-        cus_add1: address1,
-        cus_add2: address2,
-        cus_city: city,
-        cus_state: state,
-        cus_postcode: postalCode,
-        cus_country: "BD",
-        cus_phone: phoneNumber,
-        cus_fax: phoneNumber,
-        shipping_method: "courier",
-        ship_name: user ? user.displayName : "",
-        ship_add1: address1,
-        ship_add2: address2,
-        ship_city: city,
-        ship_state: state,
-        ship_postcode: postalCode,
-        ship_country: "BD",
-        products: cartitems,
-        paymentStatus: "COD",
-        OrderStatus: "pending",
+        coupon: "SUMMER_SALE", // Example value, update dynamically if applicable
+        items: cartitems.map((item, index) => ({
+          item_id: item.id || `SKU_${index + 1}`,
+          item_name: item.name || "Unknown Item",
+          affiliation: "Divine Menswear",
+          coupon: "SUMMER_FUN", // Example value
+          discount: 0, // Update with actual discount amount if available
+          index: index,
+          item_brand: "Divine",
+          item_category: item.category || "Apparel",
+          item_variant: item.variant || "default",
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+        })),
       };
-  
-      console.log(paymentData);
-  
-      let res = await fetch("/api/user/orders", {
+
+      // Send purchase event to GTM
+      sendGTMEvent(purchaseData);
+
+      const emailData = {
+        to: email,
+        userEmail: email,
+        invoiceDate: new Date().toLocaleDateString(),
+        orderId: responseJson.orderId,
+        documentNo: "pending",
+        billedTo: {
+          name: `${user.displayName}`,
+          address1: address1,
+          address2: address2,
+          city: city,
+          state: state,
+          postalCode: postalCode,
+          country: "BD",
+        },
+        products: cartitems,
+        total: total,
+      };
+
+      let emailRes = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(paymentData),
+        body: JSON.stringify(emailData),
       });
-  
-      let responseJson = await res.json();
-      console.log(responseJson);
-  
-      if (responseJson) {
-        const emailData = {
-          to: email,
-          userEmail: email,
-          invoiceDate: new Date().toLocaleDateString(),
-          orderId: responseJson.orderId, // Assuming this is returned from the order API
-          documentNo:'pending', // Placeholder or use the real document number
-          billedTo: {
-            name: `${user.displayName}`,
-            address1: address1,
-            address2: address2,
-            city: city,
-            state: state,
-            postalCode: postalCode,
-            country: "BD",
-          },
-          products: cartitems,
-          total: total,
-        };
-  
-        let emailRes = await fetch("/api/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(emailData),
-        });
-  
-        let emailResponseJson = await emailRes.json();
-        if (emailResponseJson) {
-          router.push(`/success`);
-        }
-        console.log("Email sent: ", emailResponseJson);
-      }
-    } catch (error) {
-      console.error("Error processing order:", error);
-      toast.error(
-        "Something went wrong while processing your order. Please try again."
-      );
-    } finally {
-      setLoader(false);
-      toast.dismiss(pendingToastId); // Dismiss the pending toast once the process is complete
-    }
-  };
 
+      let emailResponseJson = await emailRes.json();
+      if (emailResponseJson) {
+        router.push(`/success`);
+      }
+    }
+  } catch (error) {
+    console.error("Error processing order:", error);
+    toast.error("Something went wrong while processing your order. Please try again.");
+  } finally {
+    setLoader(false);
+    toast.dismiss(pendingToastId);
+  }
+};
   const PayNow = (PayURL) => {
     window.location.replace(PayURL);
   };
