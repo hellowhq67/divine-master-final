@@ -33,7 +33,7 @@ export default function ProductDetail({ product, productID }) {
 
 
   // Google Tag Manager Data Layer Event
-useEffect(() => {
+ useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get("/api/admin/products/review");
@@ -43,17 +43,35 @@ useEffect(() => {
         );
         setReviews(filteredReviews);
       } catch (error) {
-        console.error("Error fetching reviews:", error);
+        console.error("Failed to fetch reviews:", error.message);
       }
     };
 
+    const sendViewItemEvent = () => {
+      if (!product) return; // Ensure product exists before sending the event
+
+      const items = [
+        {
+          item_id: product._id,
+          item_name: product.productName,
+          price: product.price,
+        },
+      ];
+
+      sendGTMEvent({
+        event: "view_item",
+        value: {
+          ecommerce: {
+            currency: "BDT", // Adjust to your store's currency
+            items,
+          },
+        },
+      });
+    };
+
     fetchReviews();
-
-    // Define items array for GTM event
-    
-
+    sendViewItemEvent();
   }, [productID, product, selectedSize]);
-
 
 
   const handleSizeSelect = (size) => {
