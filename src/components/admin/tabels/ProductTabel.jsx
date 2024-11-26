@@ -116,7 +116,7 @@ const ProductTable = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/admin/delete-products/${id}`,
+        `/api/admin/delete-products/${id}`,
         {
           method: "DELETE",
         }
