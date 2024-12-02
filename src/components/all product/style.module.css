@@ -225,13 +225,5 @@
 .addButton:hover {
   color: #3b82f6; /* Tailwind's blue-500 */
 }
-  .wrapper2{
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    align-items: center;
-    justify-content: center;
-    margin: 2rem 0px;
-    padding-top: 4rem;
-  }
+
 }
