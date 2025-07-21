@@ -1,9 +1,12 @@
 
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const connectMongoDB = async () => {
   try {
-    await mongoose.connect("mongodb+srv://floorapp355:J1YmCDnTvZsAvGmt@floorapp.ysgurtu.mongodb.net/divine?retryWrites=true&w=majority&appName=floorapp");
+    await mongoose.connect(process.env.MONGODB_URI);
     
     console.log("Connected to MongoDB.");
   } catch (error) {
