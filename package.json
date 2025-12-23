@@ -28,7 +28,7 @@
     "firebase": "^10.12.2",
     "jspdf": "^2.5.1",
     "mongoose": "^7.6.6",
-    "next": "14.2.3",
+    "next": "14.2.35",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.14",
     "react": "^18",
